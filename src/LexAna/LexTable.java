@@ -31,6 +31,7 @@ public class LexTable {
 		lMap.put("for", TokenType.KEYFOR);
 		lMap.put("new", TokenType.KEYNEW);
 		lMap.put("read", TokenType.KEYREA);
+		lMap.put("break",TokenType.KEYBRK);
 
 		lMap.put("(", TokenType.SEPAPR);
 		lMap.put(")", TokenType.SEPFPR);
@@ -41,6 +42,7 @@ public class LexTable {
 		lMap.put(",", TokenType.SEPVRG);
 		lMap.put(";", TokenType.SEPPEV);
 		lMap.put(".", TokenType.SEPPNT);
+		lMap.put(":", TokenType.SEPDPT);
 		
 		//operadores da linguagem
 		lMap.put("=", TokenType.OPRATR);
@@ -69,6 +71,7 @@ public class LexTable {
 		lMap.put("-=", TokenType.OPRDCI);
 		lMap.put("*=", TokenType.OPRMTI);
 		lMap.put("/=", TokenType.OPRDVI);
+		lMap.put("|", TokenType.OPRIOR);
 		
 		//simbolos que compoe a linguagem
 		//!|%|^|&|*|(|)|-|+|=|{|}|||~|[|]|\|;|'|:|"|<|>|?|,|.|/|#|@|`|_

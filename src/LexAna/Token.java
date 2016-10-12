@@ -1,10 +1,10 @@
 package LexAna;
 
 public class Token{
-	public TokenType type;
-	public String val;
-	public int line;
-	public int col;
+	private TokenType type;
+	private String val;
+	private int line;
+	private int col;
 	
 	public Token (int line, int col,String val,LexicalAnalyzer la){
 		this.type = setType(val,la);

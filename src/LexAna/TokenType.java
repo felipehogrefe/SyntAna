@@ -71,7 +71,9 @@ public enum TokenType {
 	OPRMTI(67),//*/
 	OPRDVI(68),// /=
 	OPRNUN(69),
-	NULL(70);
+	NULL(70),
+	SEPDPT(71),
+	KEYBRK(72);
 	
 	private int value;
 	
