@@ -73,7 +73,8 @@ public enum TokenType {
 	OPRNUN(69),
 	NULL(70),
 	SEPDPT(71),
-	KEYBRK(72);
+	KEYBRK(72),
+	KEYVOD(73);
 	
 	private int value;
 	

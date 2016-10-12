@@ -52,6 +52,19 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
+	public static void TIPOPRIMITIVO(){
+//		TIPOPRIMITIVO =  'tkLgc' 
+//				| 'tkChr' 
+//				| 'tkStr'
+//				| TIPOPRIMITIVONUM
+		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
+			TIPOPRIMITIVONUM();
+		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
+				currentTk.checkType(TokenType.KEYSTR)){
+			getToken();
+		}
+	}
+	
 	public static void TIPOPRIMITIVONUM(){
 //		TIPOPRIMITIVONUM = 'tkInt'  
 //				| 'tkDbl' 
@@ -83,6 +96,26 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
+	public static void TIPO(){
+//		TIPO =  NOME
+//				| TIPOPRIMITIVO
+//				| 'void'
+		if(currentTk.checkType(TokenType.KEYVOD)){
+			getToken();
+		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||currentTk.checkType(TokenType.KEYSTR)||
+				currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)){
+			TIPOPRIMITIVO();
+		}else if(currentTk.checkType(TokenType.ID)){
+			NOME();
+		}
+	}
+	
+	public static void MODIFICADOR(){
+		if(currentTk.checkType(TokenType.KEYSTC)){
+			getToken();
+		}
+	}
+	
 	public static void DECCLASSE(){
 //		DECCLASSE = MODIFICADOR ‘class’ ‘id’ CORPOCLASSE
 		MODIFICADOR();
@@ -96,12 +129,6 @@ public class SyntaticAnalyzer {
 			}
 		}else{
 //			erro
-		}
-	}
-	
-	public static void MODIFICADOR(){
-		if(currentTk.checkType(TokenType.KEYSTC)){
-			getToken();
 		}
 	}
 	
@@ -120,98 +147,324 @@ public class SyntaticAnalyzer {
 	}
 	
 	public static void DECSCORPOCLASSE(){
+//		DECSCORPOCLASSE = DECCORPOCLASSE DECC1
 		DECCORPOCLASSE();
 		DECC1();
+		
+	}
+	
+	public static void DECC1(){
+//		DECC1 = DECCORPOCLASSE DECC1 
+//				| null
 	}
 	
 	public static void DECCORPOCLASSE(){
-		if(la.nextToken().checkType(TokenType.ID)){
-		//se entrar aqui é DECCAMPO ou DECMETODO	
-			Token tk = la.nextToken();
-			TokenType tkt = tk.getCategory();
-			if(tkt==TokenType.SEPVRG){
-				DECVARIAVEL();
-				DECV1();
-			}else if(tkt==TokenType.SEPACL){
-				
-			}
-			if(la.nextToken().checkType(TokenType.SEPACL)){
-				if(la.nextToken().checkType(TokenType.SEPFCL)){
-//					DECVARIAVELID = ‘id’ | DECVARIAVELID ‘[’ ‘]’
-				}else if((la.nextToken().checkType(TokenType.SEPFCL))){
-					LISTPARAMFORMAL();
-//					METODODEC = ‘id’ ‘[’ LISTPARAMFORMAL ‘]’
-				}
-			}
-		}
-		
-//		DECCORPOCLASSE  = DECMEMBROCLASSE | DECCONSTRU
-//		DECMEMBROCLASSE = DECCAMPO | DECMETODO
-//				DECCAMPO = MODIFICADOR TIPO DECSVARIAVEL ‘;’
-//					TIPO = TIPOPRIMITIVO | TIPOREF
-//					DECSVARIAVEL = DECVARIAVEL DECV1
-//						DECV1 = ‘,’  DECVARIAVEL DECV1
-//						DECVARIAVEL = DECVARIAVELID DECVARIAVELF
-//							DECVARIAVELID = ‘id’ | DECVARIAVELID ‘[’ ‘]’
-//							//se terminar com ; é deccampo
-//		
-//					DECMETODO = CABMETODO CORPOMETODO
-//						CABMETODO = TIPO METODODEC | METODODEC
-//							TIPO = TIPOPRIMITIVO | TIPOREF
-//							METODODEC = ‘id’ ‘[’ LISTPARAMFORMAL ‘]’
-//							//se tiver { é decmetodo
-//		OU
-//		DECCONSTRU(); arrastar pra analise semantica
+//		DECCORPOCLASSE  = DECMEMBROCLASSE 
+//				| DECCONSTRU
 	}
 	
-
-	public static void LISTPARAMFORMAL(){
-//		LISTPARAMFORMAL = PARAMFORMAIS LISTPARAMFORMAL1
-//				LISTPARAMFORMAL1 = ‘,’ PARAMFORMAIS LISTPARAMFORMAL
-//				PARAMFORMAIS = TIPO DECVARIAVELID
+	public static void DECMEMBROCLASSE(){
+//		DECMEMBROCLASSE = DECCAMPO 
+//		| DECMETODO
+	}
+	
+	public static void DECCAMPO(){
+//		DECCAMPO = MODIFICADOR TIPO DECSVARIAVEL ';'
+		MODIFICADOR();
+		TIPO();
+		DECSVARIAVEL();
+		if(currentTk.checkType(TokenType.SEPPEV)){
+			getToken();
+		}else{
+//			erro
+		}
+	}
+	
+	public static void DECSVARIAVEL(){
+//		DECSVARIAVEL = DECVARIAVEL DECV1
+		DECVARIAVEL();
+		DECV1();
 	}
 	
 	public static void DECV1(){
-		if(la.nextToken().checkType(TokenType.SEPVRG)){
+		if(currentTk.checkType(TokenType.SEPVRG)){
+			getToken();
 			DECVARIAVEL();
 			DECV1();
 		}
 	}
 	
 	public static void DECVARIAVEL(){
-		if(la.nextToken().checkType(TokenType.ID)){
-			DECVARIAVELF();
+//		DECVARIAVEL = DECVARIAVELID DECVARIAVELF
+		DECVARIAVELID();
+		DECVARIAVELF();
+	}
+	
+	public static void DECVARIAVELF(){
+//		DECVARIAVELF = '=' EXPRESSAO 
+//				| null
+		if(currentTk.checkType(TokenType.OPRATR)){
+			getToken();
+			EXPRATR();
+		}
+	}
+	
+	public static void DECVARIAVELID(){
+//		DECVARIAVELID = 'id' COLARRAY
+		if(currentTk.checkType(TokenType.ID)){
+			getToken();
+			COLARRAY();
 		}else{
 //			erro
 		}
 	}
 	
-	public static void DECVARIAVELF(){
-		if(la.nextToken().checkType(TokenType.OPRATR)){
-			INICVARIAVEL();
+	public static void COLARRAY(){
+//		COLARRAY = '[' ']'
+//				| null
+		if(currentTk.checkType(TokenType.SEPACL)){
+			getToken();
+			if(currentTk.checkType(TokenType.SEPACL)){
+				getToken();
+			}else{
+//				erro
+			}
 		}
 	}
 	
-	public static void INICVARIAVEL(){
-		EXPRESSAO();
-		INICARRAY();
+	public static void DECMETODO(){
+//		DECMETODO = CABMETODO CORPOMETODO
+		CABMETODO();
+		CORPOMETODO();
 	}
 	
-	public static void DECC1(){
-		DECCORPOCLASSE();
-		DECC1();
-//		OU
-//		NULL();
+	public static void CABMETODO(){
+//		CABMETODO = MODIFICADOR TIPO DECPARAMFOR
+		MODIFICADOR();
+		TIPO();
+		DECPARAMFOR();		
 	}
 	
-	public static void ITEDECNSI(){
-//		ITEDECNSI = 'if' '[' EXPRATR ']' DECNSI 'else' DECNSI 
+	public static void LISTPARAMFORMAL(){
+//		LISTPARAMFORMAL = PARAMFORMAIS LISTPARAMFORMAL1
+//				| null
+		if(currentTk.checkType(TokenType.ID)||currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
+				currentTk.checkType(TokenType.KEYSTR)||currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)
+				||currentTk.checkType(TokenType.KEYVOD)){
+			PARAMFORMAIS();
+			LISTPARAMFORMAL1();
+		}
+	}
+	
+	public static void LISTPARAMFORMAL1(){
+//		LISTPARAMFORMAL1 = �,� PARAMFORMAIS LISTPARAMFORMAL
+//				| null
+		if(currentTk.checkType(TokenType.SEPVRG)){
+			getToken();
+			PARAMFORMAIS();
+			LISTPARAMFORMAL();
+		}
+	}
+	
+	
+	public static void PARAMFORMAIS(){
+//		PARAMFORMAIS = TIPO DECPRAMFOR
+		TIPO();
+		DECPARAMFOR();
+	}
+	
+	public static void CORPOMETODO(){
+//		CORPOMETODO = BLOCO 
+//				| ';'
+		if(currentTk.checkType(TokenType.SEPPEV)){
+			getToken();
+		}else{
+			BLOCO();
+		}
+	}
+	
+	public static void DECPARAMFOR(){
+//		DECPARAMFOR = 'id' '[' LISTPARAMFORMAL ']'
+		if(currentTk.checkType(TokenType.ID)){
+			getToken();	
+			if(currentTk.checkType(TokenType.SEPACL)){
+				getToken();	
+				LISTPARAMFORMAL();
+				if(currentTk.checkType(TokenType.SEPACL)){
+					getToken();	
+				}else{
+//					erro
+				}
+			}else{
+//				erro
+			}
+		}else{
+//			erro
+		}
+	}
+	
+	public static void DECCONSTRU(){
+//		DECCONSTRU = 'id' '[' LISTPARAMFORMAL ']'
+		if(currentTk.checkType(TokenType.ID)){
+			getToken();
+			if(currentTk.checkType(TokenType.SEPACL)){
+				getToken();
+				LISTPARAMFORMAL();
+				if(currentTk.checkType(TokenType.SEPFCL)){
+					getToken();
+				}else{
+//					erro
+				}
+			}else{
+//				erro
+			}
+		}else{
+//			erro
+		}
+	}
+	
+	public static void BLOCO(){
+//		BLOCO = '{' DECBLOCO '}'
+		if(currentTk.checkType(TokenType.SEPACH)){
+			getToken();
+			DECBLOCO();
+			if(currentTk.checkType(TokenType.SEPFCH)){
+				getToken();
+			}else{
+//				erro
+			}
+		}else{
+//			erro
+		}
+	}
+	
+	public static void DECBLOCO(){
+//		DECBLOCO = BLOCODEC DECB1
+		BLOCODEC();
+		DECB1();
+	}
+	
+	public static void DECB1(){
+//		DECB1 = DECBLOCO DECB1 
+//				| null
+		if(!currentTk.checkType(TokenType.SEPFCH)){
+			/*se o currentTk for '}' significa que o bloco acabou, logo estamos no desvio null
+			 caso contrario, para qualquer outro token ainda estamos no bloco*/
+			DECBLOCO();
+			DECB1();
+		}
+	}
+	
+
+	public static void BLOCODEC(){
+//		BLOCODEC = DECCAMPO 
+//				| DECLARACAO
+		if(currentTk.checkType(TokenType.KEYIF)||currentTk.checkType(TokenType.KEYWHL)||currentTk.checkType(TokenType.KEYFOR)||
+				currentTk.checkType(TokenType.SEPPEV)||currentTk.checkType(TokenType.SEPACH)){
+			DECLARACAO();
+		}else{
+			DECCAMPO();
+		}
+	}
+	
+	public static void DECLARACAO(){
+//		DECLARACAO = DECSEMSUBDECDIR 
+//		        | DECWHILE 
+//		        | DECFOR 
+//		        | IFDEC
+		if(currentTk.checkType(TokenType.KEYIF)){
+			DECIF();
+		}else if(currentTk.checkType(TokenType.KEYWHL)){
+			DECWHILE();
+		}else if(currentTk.checkType(TokenType.KEYFOR)){
+			DECFOR();
+		}else{
+			DECSEMSUBDECDIR();
+		}
+	}
+	
+	public static void DECSEMSUBDECDIR(){
+//		DECSEMSUBDECDIR = BLOCO 
+//				| ';' 
+//				| EXPRESSAODEC 
+//		        | DECRETURN 
+//		        | DECBREAK
+		if(currentTk.checkType(TokenType.SEPACH)){
+			BLOCO();
+		}else if(currentTk.checkType(TokenType.SEPPEV)){
+			getToken();
+		}else if(currentTk.checkType(TokenType.KEYRET)){
+			DECRETURN();
+		}else if(currentTk.checkType(TokenType.KEYBRK)){
+			DECBREAK();
+		}else{
+			EXPRESSAODEC();
+		}
+		
+	}
+	
+	public static void EXPRESSAODEC(){
+//		EXPRESSAODEC = EXPRINCRPRE 
+//				| EXPRDECREPRE 
+//		        | EXPRCRIAINSTANCLASSE
+//		        | NOME '[' LISTAARG ']' ATR
+		if(currentTk.checkType(TokenType.ID)){
+			NOME();
+			if(currentTk.checkType(TokenType.SEPACL)){
+				getToken();
+				LISTAARG();
+				if(currentTk.checkType(TokenType.SEPFCL)){
+					getToken();
+					ATR();
+				}
+			}
+		}else if(currentTk.checkType(TokenType.OPRMMA)){
+			EXPRINCRPRE();
+		}else if(currentTk.checkType(TokenType.OPRMME)){
+			EXPRDECREPRE();
+		}else if(currentTk.checkType(TokenType.KEYNEW)){
+			EXPRCRIAINSTANCLASSE();
+		}
+	}
+	
+	public static void ATR(){
+//		ATR = '=' EXPRATR
+		if(currentTk.checkType(TokenType.OPRATR)){
+			getToken();
+			EXPRATR();
+		}
+		
+	}
+	
+	
+	public static void DECIF(){
+//		IFTHENDEC = 'if' '[' EXPRATR ']'  DECLARACAO 
 		if(currentTk.checkType(TokenType.KEYIF)){
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
 				getToken();
 				EXPRATR();
+				if(currentTk.checkType(TokenType.SEPFCL)){
+					getToken();
+					DECLARACAO();
+					DECELSE();
+				}else{
+//					erro
+				}
+			}else{
+//				erro
 			}
+		}else{
+//			erro
+		}
+	}
+	
+	public static void DECELSE(){
+//		ELSEDEC = 'else' DECLARACAO
+//				| null
+		if(currentTk.checkType(TokenType.KEYELS)){
+			getToken();
+			DECLARACAO();
 		}
 	}
 	
@@ -225,28 +478,6 @@ public class SyntaticAnalyzer {
 				if(currentTk.checkType(TokenType.SEPFCL)){
 					getToken();
 					DECLARACAO();
-				}else{
-//					erro
-				}
-			}else{
-//				erro
-			}
-		}else{
-//			erro
-		}
-	}
-
-	
-	public static void WDECNSI(){
-//		WDECNSI = 'while' '[' EXPRATR ']' DECNSI 
-		if(currentTk.checkType(TokenType.KEYWHL)){
-			getToken();
-			if(currentTk.checkType(TokenType.SEPACL)){
-				getToken();
-				EXPRATR();
-				if(currentTk.checkType(TokenType.SEPFCL)){
-					getToken();
-					DECNSI();
 				}else{
 //					erro
 				}
@@ -274,39 +505,6 @@ public class SyntaticAnalyzer {
 						if(currentTk.checkType(TokenType.SEPFCL)){
 							getToken();
 							DECLARACAO();
-						}else{
-//							erro
-						}
-					}else{
-//						erro
-					}
-				}else{
-//					erro
-				}
-			}else{
-//				erro
-			}
-		}else{
-//			erro
-		}
-	}
-	
-	public static void FDECNSI(){
-//		FDECNSI = 'for' '[' FORINIT ';' LIMITESUP ';' PASSO ']' DECNSI 
-		if(currentTk.checkType(TokenType.KEYFOR)){
-			getToken();
-			if(currentTk.checkType(TokenType.SEPACL)){
-				getToken();
-				FORINIT();
-				if(currentTk.checkType(TokenType.SEPPEV)){
-					getToken();
-					LIMITESUP();
-					if(currentTk.checkType(TokenType.SEPPEV)){
-						getToken();
-						PASSO();
-						if(currentTk.checkType(TokenType.SEPFCL)){
-							getToken();
-							DECNSI();
 						}else{
 //							erro
 						}
@@ -354,6 +552,23 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
+	public static void LISTADECEXPR(){
+//		LISTADECEXPR = EXPRESSAODEC LISTADECEXPR1
+		EXPRESSAODEC();
+		LISTADECEXPR1();
+	}
+	
+	public static void LISTADECEXPR1(){
+//		LISTADECEXPR1 = ';' LISTADECEXPR LISTADECEXPR1
+//				| null
+		if(currentTk.checkType(TokenType.SEPPEV)){
+			getToken();
+			LISTADECEXPR(); 
+			LISTADECEXPR1();
+		}
+	}
+	
+	
 	public static void DECRETURN(){
 //		DECRETURN = 'return' EXPRATR ';'
 		if(currentTk.checkType(TokenType.KEYRET)){
@@ -393,6 +608,7 @@ public class SyntaticAnalyzer {
 		if(currentTk.checkType(TokenType.SEPVRG)){
 			getToken();
 			LISTAARG();
+			LISTA1();
 		}
 	}
 	
@@ -476,23 +692,15 @@ public class SyntaticAnalyzer {
 	}
 	
 	public static void PRIMARIO(){
-//		PRIMARIO = PRISEMNOVOARRAY 
+//		PRIMARIO = 'this' 
+//		        | '[' EXPRATR ']'
+//		        | LITERAL
+//		        | EXPRCRIAINSTANCLASSE
+//		    	| CHAMADAMETODO 
 //				| EXPRCRIAARRAY
 		if(currentTk.checkType(TokenType.KEYARY)){
 			EXPRCRIAARRAY();
-		}else{
-			PRISEMNOVOARRAY();
-		}
-	}
-	
-	public static void PRISEMNOVOARRAY(){
-//		PRISEMNOVOARRAY = LITERAL
-//		    	| 'this' 
-//		        | '[' EXPRATR ']'
-//		        | EXPRCRIAINSTANCLASSE
-//		    	| CHAMADAMETODO 
-//		        | ACESSAARRAY
-		if(currentTk.checkType(TokenType.KEYTHS)){
+		}else if(currentTk.checkType(TokenType.KEYTHS)){
 			getToken();
 		}else if(currentTk.checkType(TokenType.SEPACL)){
 			getToken();
@@ -657,22 +865,50 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRUNARIA(){
-//		EXPRUNARIA = '--' EXPRUNARIA
-//				| '--' EXPRUNARIA
-//		        | '+' EXPRUNARIA
-//		        | '-' EXPRUNARIA 
-//				| '~' EXPRUNARIA 
-//				| '!' EXPRUNARIA
-//       		| EXPRPOSF 
-		if(currentTk.checkType(TokenType.OPRIGL)||currentTk.checkType(TokenType.OPRDIF)||currentTk.checkType(TokenType.OPRDIF)
-				||currentTk.checkType(TokenType.OPRDIF)||currentTk.checkType(TokenType.OPRDIF)||currentTk.checkType(TokenType.OPRDIF)){
+	public static void EXPRINCRPRE(){
+//		EXPRINCRPRE =  '++' EXPRUNARIA
+		if(currentTk.checkType(TokenType.OPRMMA)){
 			getToken();
 			EXPRUNARIA();
-		}else{
+		}
+	}
+	
+	public static void EXPRDECREPRE(){
+//		EXPRINCRPRE =  '--' EXPRUNARIA
+		if(currentTk.checkType(TokenType.OPRMME)){
 			getToken();
+			EXPRUNARIA();
+		}
+	}
+	
+	public static void EXPUNNMM(){
+//		EXPUNNMM = EXPRPOSF 
+//				| '~' EXPRUNARIA 
+//				| '!' EXPRUNARIA
+		if(currentTk.checkType(TokenType.OPRDIF)||currentTk.checkType(TokenType.OPRNEG)){
+			EXPRUNARIA();
+		}else{
 			EXPRPOSF();
 		}
+	}
+	
+	public static void EXPRUNARIA(){
+//		EXPRUNARIA = '+' EXPRUNARIA
+//		        | '-' EXPRUNARIA 
+//		        | EXPRPOSF 
+//		        | EXPRINCRPRE
+//		        | EXPRDECREPRE 
+//		        | EXPUNNMM
+		if(currentTk.checkType(TokenType.OPRADC)||currentTk.checkType(TokenType.OPRMEN)){
+			getToken();
+			EXPRUNARIA();
+		}else if(currentTk.checkType(TokenType.OPRMME)){
+			EXPRDECREPRE();
+		}else if(currentTk.checkType(TokenType.OPRMMA)){
+			EXPRINCRPRE();
+		}else{
+			EXPRPOSF();
+		}	
 	}
 	
 	public static void EXPRREL(){
@@ -703,7 +939,7 @@ public class SyntaticAnalyzer {
 //				| '>' EXPRADD EXPRREL1 
 //				| '<=' EXPRADD EXPRREL1  
 //				| '>=' EXPRADD EXPRREL1 
-//				| 'instanceof' TIPOREF EXPRREL1
+//				| 'instanceof' 'id' EXPRREL1
 //				| null
 		if(currentTk.checkType(TokenType.OPRMNR)||currentTk.checkType(TokenType.OPRMAR)||currentTk.checkType(TokenType.OPRMEI)||
 				currentTk.checkType(TokenType.OPRMAI)){
@@ -712,8 +948,12 @@ public class SyntaticAnalyzer {
 			EXPRREL1();
 		}else if(currentTk.checkType(TokenType.KEYIOF)){
 			getToken();
-			TIPOREF();
-			EXPRREL1();
+			if(currentTk.checkType(TokenType.ID)){
+				getToken();
+				EXPRREL1();
+			}else{
+//				erro
+			}
 		}
 	}
 	
@@ -753,9 +993,43 @@ public class SyntaticAnalyzer {
 	}
 	
 	public static void EXPRPOSF(){
-//		EXPRPOSF = PRIMARIO 
+//		EXPRPOSF = 'this' 
+//		        | '[' EXPRATR ']'
+//		        | LITERAL
+//		        | EXPRCRIAINSTANCLASSE
+//		    	| CHAMADAMETODO 
+//				| EXPRCRIAARRAY
 //				| NOME 
-//				| EXPRINCRPOS 
-//		        | EXPRDECREPOS
+		if(currentTk.checkType(TokenType.KEYARY)){
+			EXPRCRIAARRAY();
+		}else if(currentTk.checkType(TokenType.KEYTHS)){
+			getToken();
+		}else if(currentTk.checkType(TokenType.SEPACL)){
+			getToken();
+			EXPRATR();
+		}else if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTSTR)||currentTk.checkType(TokenType.CNTCHR)||
+				currentTk.checkType(TokenType.CTNINT)||currentTk.checkType(TokenType.CTNDBL)){
+			getToken();			
+		}else if(currentTk.checkType(TokenType.KEYNEW)){
+			EXPRCRIAINSTANCLASSE();
+		}else if(currentTk.checkType(TokenType.ID)){
+			getToken();	
+			NOME();
+			CHAMADA();
+		}
+	}
+	
+	public static void CHAMADA(){
+		if(currentTk.checkType(TokenType.SEPACL)){
+			getToken();	
+			LISTAARG();
+			if(currentTk.checkType(TokenType.SEPACL)){
+				getToken();	
+			}else{
+//				erro
+			}
+		}else{
+//			erro
+		}
 	}
 }	
