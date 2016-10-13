@@ -5,15 +5,18 @@ import LexAna.Token;
 import LexAna.TokenType;
 
 public class SyntaticAnalyzer {
-	static LexicalAnalyzer la;
-	static Token currentTk;
+	LexicalAnalyzer la;
+	Token currentTk;
 	
-	private static void getToken(){
+	private void getToken(){
 		currentTk = la.nextToken();
+		currentTk.print();
+		
 	}
 	
-	SyntaticAnalyzer(LexicalAnalyzer la){
-		this.la = la;
+	SyntaticAnalyzer(LexicalAnalyzer lex){
+		this.la = lex;
+		la.printFile();
 	}
 	
 	public void start(){
@@ -21,27 +24,9 @@ public class SyntaticAnalyzer {
 		getToken();
 		DECCLASSE();
 	}
+
 	
-	public static void NOME(){
-//		NOME = 'id' NOMECOMP
-		if(currentTk.checkType(TokenType.ID)){
-			getToken();
-			NOMECOMP();
-		}else{
-//			erro
-		}
-	}
-	
-	public static void NOMECOMP(){
-//		NOMECOMP = '.' NOME
-//				| null
-		if(currentTk.checkType(TokenType.SEPPNT)){
-			getToken();
-			NOME();
-		}
-	}
-	
-	public static void LITERAL(){
+	public void LITERAL(){
 //		LITERAL = CNT | CTN
 		if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTCHR)||currentTk.checkType(TokenType.CNTSTR)){
 			getToken();
@@ -52,30 +37,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void TIPOPRIMITIVO(){
-//		TIPOPRIMITIVO =  'tkLgc' 
-//				| 'tkChr' 
-//				| 'tkStr'
-//				| TIPOPRIMITIVONUM
-		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
-			TIPOPRIMITIVONUM();
-		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
-				currentTk.checkType(TokenType.KEYSTR)){
-			getToken();
-		}
-	}
-	
-	public static void TIPOPRIMITIVONUM(){
-//		TIPOPRIMITIVONUM = 'tkInt'  
-//				| 'tkDbl' 
-		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
-			getToken();
-		}else{
-//			erro
-		}
-	}
-	
-	public static void CNT(){
+	public void CNT(){
 //		CNT = 'cntLgc' 
 //				| 'cntChr' 
 //				| 'cntStr'
@@ -86,7 +48,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void CTN(){
+	public void CTN(){
 //		CTN = 	'ctnInt' 
 //				| 'ctnDbl' 
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
@@ -96,7 +58,8 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void TIPO(){
+	
+	public void TIPO(){
 //		TIPO =  NOME
 //				| TIPOPRIMITIVO
 //				| 'void'
@@ -110,13 +73,55 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void MODIFICADOR(){
+	public void TIPOPRIMITIVO(){
+//		TIPOPRIMITIVO =  'tkLgc' 
+//				| 'tkChr' 
+//				| 'tkStr'
+//				| TIPOPRIMITIVONUM
+		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
+			TIPOPRIMITIVONUM();
+		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
+				currentTk.checkType(TokenType.KEYSTR)){
+			getToken();
+		}
+	}
+	
+	public void TIPOPRIMITIVONUM(){
+//		TIPOPRIMITIVONUM = 'tkInt'  
+//				| 'tkDbl' 
+		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
+			getToken();
+		}else{
+//			erro
+		}
+	}	
+	
+	public void NOME(){
+//		NOME = 'id' NOMECOMP
+		if(currentTk.checkType(TokenType.ID)){
+			getToken();
+			NOMECOMP();
+		}else{
+//			erro
+		}
+	}
+	
+	public void NOMECOMP(){
+//		NOMECOMP = '.' NOME
+//				| null
+		if(currentTk.checkType(TokenType.SEPPNT)){
+			getToken();
+			NOME();
+		}
+	}
+	
+	public void MODIFICADOR(){
 		if(currentTk.checkType(TokenType.KEYSTC)){
 			getToken();
 		}
 	}
 	
-	public static void DECCLASSE(){
+	public void DECCLASSE(){
 //		DECCLASSE = MODIFICADOR ‘class’ ‘id’ CORPOCLASSE
 		MODIFICADOR();
 		if(currentTk.checkType(TokenType.KEYCLS)){
@@ -132,43 +137,49 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void CORPOCLASSE(){
+	public void CORPOCLASSE(){
 		if(currentTk.checkType(TokenType.SEPACH)){
 			getToken();
 			DECSCORPOCLASSE();
+			if(currentTk.checkType(TokenType.SEPFCH)){
+				getToken();
+			}else{
+//				erro
+			}
 		}else{
 //			erro
 		}
-		if(la.nextToken().checkType(TokenType.SEPFCH)){
-			getToken();
-		}else{
-//			erro
-		}
+		
 	}
 	
-	public static void DECSCORPOCLASSE(){
-//		DECSCORPOCLASSE = DECCORPOCLASSE DECC1
-		DECCORPOCLASSE();
+	public void DECSCORPOCLASSE(){
+//		DECSCORPOCLASSE = DECMEMBROCLASSE DECC1
+		DECMEMBROCLASSE();
 		DECC1();
 		
 	}
 	
-	public static void DECC1(){
-//		DECC1 = DECCORPOCLASSE DECC1 
+	public void DECC1(){
+//		DECC1 = DECMEMBROCLASSE DECC1 
 //				| null
+		if(!currentTk.checkType(TokenType.SEPFCH)){
+			DECMEMBROCLASSE();
+			DECC1();
+		}
 	}
 	
-	public static void DECCORPOCLASSE(){
-//		DECCORPOCLASSE  = DECMEMBROCLASSE 
-//				| DECCONSTRU
+	public void DECMEMBROCLASSE(){
+//		DECMEMBROCLASSE =  DECCAMPO 
+//				| '_' DECMETODO
+		if(currentTk.checkType(TokenType.KEYMTD)){
+			getToken();
+			DECMETODO();
+		}else{
+			DECCAMPO();
+		}
 	}
 	
-	public static void DECMEMBROCLASSE(){
-//		DECMEMBROCLASSE = DECCAMPO 
-//		| DECMETODO
-	}
-	
-	public static void DECCAMPO(){
+	public void DECCAMPO(){
 //		DECCAMPO = MODIFICADOR TIPO DECSVARIAVEL ';'
 		MODIFICADOR();
 		TIPO();
@@ -180,13 +191,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECSVARIAVEL(){
+	public void DECSVARIAVEL(){
 //		DECSVARIAVEL = DECVARIAVEL DECV1
 		DECVARIAVEL();
 		DECV1();
 	}
 	
-	public static void DECV1(){
+	public void DECV1(){
 		if(currentTk.checkType(TokenType.SEPVRG)){
 			getToken();
 			DECVARIAVEL();
@@ -194,13 +205,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECVARIAVEL(){
+	public void DECVARIAVEL(){
 //		DECVARIAVEL = DECVARIAVELID DECVARIAVELF
 		DECVARIAVELID();
 		DECVARIAVELF();
 	}
 	
-	public static void DECVARIAVELF(){
+	public void DECVARIAVELF(){
 //		DECVARIAVELF = '=' EXPRESSAO 
 //				| null
 		if(currentTk.checkType(TokenType.OPRATR)){
@@ -209,7 +220,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECVARIAVELID(){
+	public void DECVARIAVELID(){
 //		DECVARIAVELID = 'id' COLARRAY
 		if(currentTk.checkType(TokenType.ID)){
 			getToken();
@@ -219,7 +230,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void COLARRAY(){
+	public void COLARRAY(){
 //		COLARRAY = '[' ']'
 //				| null
 		if(currentTk.checkType(TokenType.SEPACL)){
@@ -232,20 +243,20 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECMETODO(){
+	public void DECMETODO(){
 //		DECMETODO = CABMETODO CORPOMETODO
 		CABMETODO();
 		CORPOMETODO();
 	}
 	
-	public static void CABMETODO(){
+	public void CABMETODO(){
 //		CABMETODO = MODIFICADOR TIPO DECPARAMFOR
 		MODIFICADOR();
 		TIPO();
 		DECPARAMFOR();		
 	}
 	
-	public static void LISTPARAMFORMAL(){
+	public void LISTPARAMFORMAL(){
 //		LISTPARAMFORMAL = PARAMFORMAIS LISTPARAMFORMAL1
 //				| null
 		if(currentTk.checkType(TokenType.ID)||currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
@@ -256,7 +267,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void LISTPARAMFORMAL1(){
+	public void LISTPARAMFORMAL1(){
 //		LISTPARAMFORMAL1 = �,� PARAMFORMAIS LISTPARAMFORMAL
 //				| null
 		if(currentTk.checkType(TokenType.SEPVRG)){
@@ -267,13 +278,13 @@ public class SyntaticAnalyzer {
 	}
 	
 	
-	public static void PARAMFORMAIS(){
+	public void PARAMFORMAIS(){
 //		PARAMFORMAIS = TIPO DECPRAMFOR
 		TIPO();
 		DECPARAMFOR();
 	}
 	
-	public static void CORPOMETODO(){
+	public void CORPOMETODO(){
 //		CORPOMETODO = BLOCO 
 //				| ';'
 		if(currentTk.checkType(TokenType.SEPPEV)){
@@ -283,7 +294,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECPARAMFOR(){
+	public void DECPARAMFOR(){
 //		DECPARAMFOR = 'id' '[' LISTPARAMFORMAL ']'
 		if(currentTk.checkType(TokenType.ID)){
 			getToken();	
@@ -303,7 +314,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECCONSTRU(){
+	public void DECCONSTRU(){
 //		DECCONSTRU = 'id' '[' LISTPARAMFORMAL ']'
 		if(currentTk.checkType(TokenType.ID)){
 			getToken();
@@ -323,7 +334,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void BLOCO(){
+	public void BLOCO(){
 //		BLOCO = '{' DECBLOCO '}'
 		if(currentTk.checkType(TokenType.SEPACH)){
 			getToken();
@@ -338,13 +349,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECBLOCO(){
+	public void DECBLOCO(){
 //		DECBLOCO = BLOCODEC DECB1
 		BLOCODEC();
 		DECB1();
 	}
 	
-	public static void DECB1(){
+	public void DECB1(){
 //		DECB1 = DECBLOCO DECB1 
 //				| null
 		if(!currentTk.checkType(TokenType.SEPFCH)){
@@ -356,7 +367,7 @@ public class SyntaticAnalyzer {
 	}
 	
 
-	public static void BLOCODEC(){
+	public void BLOCODEC(){
 //		BLOCODEC = DECCAMPO 
 //				| DECLARACAO
 		if(currentTk.checkType(TokenType.KEYIF)||currentTk.checkType(TokenType.KEYWHL)||currentTk.checkType(TokenType.KEYFOR)||
@@ -367,7 +378,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECLARACAO(){
+	public void DECLARACAO(){
 //		DECLARACAO = DECSEMSUBDECDIR 
 //		        | DECWHILE 
 //		        | DECFOR 
@@ -383,7 +394,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECSEMSUBDECDIR(){
+	public void DECSEMSUBDECDIR(){
 //		DECSEMSUBDECDIR = BLOCO 
 //				| ';' 
 //				| EXPRESSAODEC 
@@ -403,7 +414,7 @@ public class SyntaticAnalyzer {
 		
 	}
 	
-	public static void EXPRESSAODEC(){
+	public void EXPRESSAODEC(){
 //		EXPRESSAODEC = EXPRINCRPRE 
 //				| EXPRDECREPRE 
 //		        | EXPRCRIAINSTANCLASSE
@@ -427,7 +438,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void ATR(){
+	public void ATR(){
 //		ATR = '=' EXPRATR
 		if(currentTk.checkType(TokenType.OPRATR)){
 			getToken();
@@ -437,7 +448,7 @@ public class SyntaticAnalyzer {
 	}
 	
 	
-	public static void DECIF(){
+	public void DECIF(){
 //		IFTHENDEC = 'if' '[' EXPRATR ']'  DECLARACAO 
 		if(currentTk.checkType(TokenType.KEYIF)){
 			getToken();
@@ -459,7 +470,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECELSE(){
+	public void DECELSE(){
 //		ELSEDEC = 'else' DECLARACAO
 //				| null
 		if(currentTk.checkType(TokenType.KEYELS)){
@@ -468,7 +479,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECWHILE(){
+	public void DECWHILE(){
 //		WDECNSI = 'while' '[' EXPRATR ']' DECLARACAO 
 		if(currentTk.checkType(TokenType.KEYWHL)){
 			getToken();
@@ -489,7 +500,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECFOR(){
+	public void DECFOR(){
 //		DECFOR = 'for' '[' FORINIT ';' LIMITESUP ';' PASSO ']' DECLARACAO
 		if(currentTk.checkType(TokenType.KEYFOR)){
 			getToken();
@@ -522,7 +533,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void FORINIT(){
+	public void FORINIT(){
 //		FORINIT = TIPOPRIMITIVONUM NOME '=' EXPRATR
 		TIPOPRIMITIVONUM();
 		NOME();
@@ -532,7 +543,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void LIMITESUP(){
+	public void LIMITESUP(){
 //		LIMITESUP = CTN 
 //				| NOME
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
@@ -542,7 +553,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void PASSO(){
+	public void PASSO(){
 //		PASSO = CTN 
 //				| NOME
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
@@ -552,13 +563,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void LISTADECEXPR(){
+	public void LISTADECEXPR(){
 //		LISTADECEXPR = EXPRESSAODEC LISTADECEXPR1
 		EXPRESSAODEC();
 		LISTADECEXPR1();
 	}
 	
-	public static void LISTADECEXPR1(){
+	public void LISTADECEXPR1(){
 //		LISTADECEXPR1 = ';' LISTADECEXPR LISTADECEXPR1
 //				| null
 		if(currentTk.checkType(TokenType.SEPPEV)){
@@ -569,7 +580,7 @@ public class SyntaticAnalyzer {
 	}
 	
 	
-	public static void DECRETURN(){
+	public void DECRETURN(){
 //		DECRETURN = 'return' EXPRATR ';'
 		if(currentTk.checkType(TokenType.KEYRET)){
 			getToken();
@@ -584,7 +595,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void DECBREAK(){
+	public void DECBREAK(){
 //		DECBREAK = 'break' ';'
 		if(currentTk.checkType(TokenType.KEYBRK)){
 			getToken();
@@ -598,13 +609,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void LISTAARG(){
+	public void LISTAARG(){
 //		LISTAARG = EXPRATR LISTA1
 		EXPRATR();
 		LISTA1();
 	}
 	
-	public static void LISTA1(){
+	public void LISTA1(){
 		if(currentTk.checkType(TokenType.SEPVRG)){
 			getToken();
 			LISTAARG();
@@ -612,7 +623,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRCRIAINSTANCLASSE(){
+	public void EXPRCRIAINSTANCLASSE(){
 //		EXPRCRIAINSTANCLASSE = 'new' TIPOCLASSE '[' LISTAARG ']'
 		if(currentTk.checkType(TokenType.KEYNEW)){
 			getToken();
@@ -633,7 +644,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void CHAMADAMETODO(){
+	public void CHAMADAMETODO(){
 //		CHAMADAMETODO = NOME '[' LISTAARG ']'
 		NOME();
 		if(currentTk.checkType(TokenType.SEPACL)){
@@ -649,7 +660,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void ACESSAARRAY(){
+	public void ACESSAARRAY(){
 //		ACESSAARRAY = NOME '[' EXPRATR ']'
 		NOME();
 		if(currentTk.checkType(TokenType.SEPACL)){
@@ -665,7 +676,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRCRIAARRAY(){
+	public void EXPRCRIAARRAY(){
 //		EXPRCRIAARRAY= 'array' '[' TIPO ',' CTN ']'
 		if(currentTk.checkType(TokenType.KEYARY)){
 			getToken();
@@ -691,7 +702,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void PRIMARIO(){
+	public void PRIMARIO(){
 //		PRIMARIO = 'this' 
 //		        | '[' EXPRATR ']'
 //		        | LITERAL
@@ -715,7 +726,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void ATRIBUICAO(){
+	public void ATRIBUICAO(){
 //		ATRIBUICAO = NOME NOME1  '=' EXPRATR
 		NOME();
 		NOME1();
@@ -727,7 +738,7 @@ public class SyntaticAnalyzer {
 		EXPRATR();
 	}
 	
-	public static void NOME1(){
+	public void NOME1(){
 		if(currentTk.checkType(TokenType.SEPACL)){
 			getToken();
 			EXPRATR();
@@ -739,18 +750,18 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRATR(){
+	public void EXPRATR(){
 //		EXPRATR = EXPRCOND 
 //				| ATRIBUICAO
 	}
 	
-	public static void EXPRCOND(){
+	public void EXPRCOND(){
 //		EXPRCOND = EXPRORCOND EXPRCOND1
 		EXPRORCOND();
 		EXPRCOND1();
 	}
 	
-	public static void EXPRCOND1(){
+	public void EXPRCOND1(){
 //		EXPRCOND1 = EXPORC 
 //				| '?' EXPRATR ':' EXPRCOND
 		if(currentTk.checkType(TokenType.OPRTRI)){
@@ -765,13 +776,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRORCOND(){
+	public void EXPRORCOND(){
 //		EXPRORCOND = EXPRECOND EXPROR1
 		EXPRECOND();
 		EXPROR1();
 	}
 	
-	public static void EXPROR1(){
+	public void EXPROR1(){
 //		EXPROR1 = '||' EXPRECOND EXPROR1 
 //				| null 
 		if(currentTk.checkType(TokenType.OPROCD)){
@@ -781,13 +792,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRECOND(){
+	public void EXPRECOND(){
 //		EXPRECOND = EXPRIOR EXPREC1 
 		EXPRIOR();
 		EXPREC1();
 	}
 	
-	public static void EXPREC1(){
+	public void EXPREC1(){
 //		EXPREC1 = '&&' EXPRIOR EXPREC1 
 //				| null
 		if(currentTk.checkType(TokenType.OPRECD)){
@@ -797,13 +808,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRIOR(){
+	public void EXPRIOR(){
 //		EXPRIOR = EXPREOR EXPRI1
 		EXPREOR();
 		EXPRI1();
 	}
 	
-	public static void EXPRI1(){
+	public void EXPRI1(){
 //		EXPRI1 = '|' EXPROIR EXPRI' 
 //				| null
 		if(currentTk.checkType(TokenType.OPRIOR)){
@@ -813,13 +824,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPREOR(){
+	public void EXPREOR(){
 //		EXPREOR = EXPRE EXPREOR1
 		EXPRE();
 		EXPREOR1();
 	}
 	
-	public static void EXPREOR1(){
+	public void EXPREOR1(){
 //		EXPREOR1 = '^' EXPREOR EXPREOR1 
 //				| null
 		if(currentTk.checkType(TokenType.OPREOR)){
@@ -829,13 +840,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRE(){
+	public void EXPRE(){
 //		EXPRE = EXPREQUA EXPRE1
 		EXPREQUA();
 		EXPRE1();
 	}
 	
-	public static void EXPRE1(){
+	public void EXPRE1(){
 //		EXPRE1 = '&' EXPREQUA EXPRE1 
 //				| null
 		if(currentTk.checkType(TokenType.OPRE)){
@@ -845,7 +856,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRINCRPOS(){
+	public void EXPRINCRPOS(){
 //		EXPRINCRPOS = EXPRPOSF '++'
 		EXPRPOSF();
 		if(currentTk.checkType(TokenType.OPRMMA)){
@@ -855,7 +866,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRDECREPOS(){
+	public void EXPRDECREPOS(){
 //		EXPRDECREPOS = EXPRPOSF '--'
 		EXPRPOSF();
 		if(currentTk.checkType(TokenType.OPRMME)){
@@ -865,7 +876,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRINCRPRE(){
+	public void EXPRINCRPRE(){
 //		EXPRINCRPRE =  '++' EXPRUNARIA
 		if(currentTk.checkType(TokenType.OPRMMA)){
 			getToken();
@@ -873,7 +884,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRDECREPRE(){
+	public void EXPRDECREPRE(){
 //		EXPRINCRPRE =  '--' EXPRUNARIA
 		if(currentTk.checkType(TokenType.OPRMME)){
 			getToken();
@@ -881,7 +892,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPUNNMM(){
+	public void EXPUNNMM(){
 //		EXPUNNMM = EXPRPOSF 
 //				| '~' EXPRUNARIA 
 //				| '!' EXPRUNARIA
@@ -892,7 +903,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRUNARIA(){
+	public void EXPRUNARIA(){
 //		EXPRUNARIA = '+' EXPRUNARIA
 //		        | '-' EXPRUNARIA 
 //		        | EXPRPOSF 
@@ -911,19 +922,19 @@ public class SyntaticAnalyzer {
 		}	
 	}
 	
-	public static void EXPRREL(){
+	public void EXPRREL(){
 //		EXPRREL = EXPRADD EXPRREL1
 		EXPRADD();
 		EXPRREL1();
 	}
 	
-	public static void EXPREQUA(){
+	public void EXPREQUA(){
 //		EXPREQUA = EXPRREL EXPREQ1
 		EXPRREL();
 		EXPREQ1();
 	}
 	
-	public static void EXPREQ1(){
+	public void EXPREQ1(){
 //		EXPREQ1 = '==' EXPREQUA EXPREQ1 
 //			    | '!=' EXPREQUA EXPREQ1 
 //				| null
@@ -934,7 +945,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRREL1(){
+	public void EXPRREL1(){
 //		EXPRREL1 =  '<' EXPRADD EXPRREL1 
 //				| '>' EXPRADD EXPRREL1 
 //				| '<=' EXPRADD EXPRREL1  
@@ -957,13 +968,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRADD(){
+	public void EXPRADD(){
 //		EXPRADD = EXPRMULT EXPRADD1
 		EXPRMULT();
 		EXPRADD1();		
 	}
 		
-	public static void  EXPRMULT1(){
+	public void  EXPRMULT1(){
 //		EXPRMULT1 = '*' EXPRUNARIA EXPRMULT1 
 //				| '/' EXPRUNARIA EXPRMULT1 
 //				| '%' EXPRUNARIA EXPRMULT1
@@ -975,13 +986,13 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRMULT(){
+	public void EXPRMULT(){
 //		EXPRMULT = EXPRUNARIA EXPRMULT1
 		EXPRUNARIA();
 		EXPRMULT1();
 	}
 	
-	public static void EXPRADD1(){
+	public void EXPRADD1(){
 //		EXPRADD1 = '+' EXPRMULT EXPRADD1
 //		        |  '-' EXPRMULT EXPRADD1 
 //		        | null	
@@ -992,7 +1003,7 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void EXPRPOSF(){
+	public void EXPRPOSF(){
 //		EXPRPOSF = 'this' 
 //		        | '[' EXPRATR ']'
 //		        | LITERAL
@@ -1019,7 +1030,9 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void CHAMADA(){
+	public void CHAMADA(){
+//		CHAMADA =  '[' LISTAARG ']'
+//				| null
 		if(currentTk.checkType(TokenType.SEPACL)){
 			getToken();	
 			LISTAARG();
@@ -1028,8 +1041,6 @@ public class SyntaticAnalyzer {
 			}else{
 //				erro
 			}
-		}else{
-//			erro
 		}
 	}
 }	

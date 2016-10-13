@@ -32,7 +32,8 @@ public class LexTable {
 		lMap.put("new", TokenType.KEYNEW);
 		lMap.put("read", TokenType.KEYREA);
 		lMap.put("break",TokenType.KEYBRK);
-		lMap.put("break",TokenType.KEYVOD);
+		lMap.put("void",TokenType.KEYVOD);
+		lMap.put("method",TokenType.KEYMTD);
 		
 
 		lMap.put("(", TokenType.SEPAPR);

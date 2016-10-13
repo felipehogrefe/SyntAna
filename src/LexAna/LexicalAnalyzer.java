@@ -4,9 +4,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 public class LexicalAnalyzer {
-	private ArrayList<String> lines;
+	public ArrayList<String> lines;
 	private int cLine, cColumn, tStartL=0, tStartC=0;
-	private String line;
+	public String line;
 	
 	
 	public LexicalAnalyzer(){
@@ -34,8 +34,13 @@ public class LexicalAnalyzer {
 		}
 	}
 	
+	public void printFile(){
+		for(String s : lines){
+			System.out.println(s);
+		}
+	}
 	public Token nextToken(){
-		//
+		
 		char cChar;
 		String tValue = "";
 		

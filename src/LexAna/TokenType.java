@@ -74,7 +74,8 @@ public enum TokenType {
 	NULL(70),
 	SEPDPT(71),
 	KEYBRK(72),
-	KEYVOD(73);
+	KEYVOD(73),
+	KEYMTD(74);
 	
 	private int value;
 	

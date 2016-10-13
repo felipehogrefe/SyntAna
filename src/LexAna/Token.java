@@ -13,6 +13,10 @@ public class Token{
 		this.col = col;
 	}
 	
+	public void print(){
+		System.out.println(val);
+	}
+	
 	public boolean checkType(TokenType tt){
 		if(this.type==tt){
 			return true;
