@@ -41,6 +41,8 @@ public class LexicalAnalyzer {
 	}
 	public Token nextToken(){
 		
+		this.printFile();
+		
 		char cChar;
 		String tValue = "";
 		
@@ -50,13 +52,13 @@ public class LexicalAnalyzer {
 		cChar = getLine().charAt(cColumn);
 
 		while (Character.toString(cChar).matches(" ") ||Character.toString(cChar).matches("\t")) {
-			//while criado para pular espa�os em branco
+			//while criado para pular espacos em branco
 			cChar = nextChar();
 			settStartC(gettStartC() + 1);
 		}
 		
 		if(Character.toString(cChar).matches("\\d")){
-			//� uma constante, vamos concatenar o numero completo
+			//eh uma constante, vamos concatenar o numero completo
 			tValue +=cChar;
 			cChar = nextChar();
 			while(Character.toString(cChar).matches("\\d")){
@@ -187,6 +189,7 @@ public class LexicalAnalyzer {
 	}
 
 	public boolean isOver() {
+		System.out.println(cLine +" "+ cColumn +" "+ tStartL+" "+ tStartC);
 		if(!lines.isEmpty()){
 			if(cLine<lines.size()){
 				setLine(lines.get(cLine));
