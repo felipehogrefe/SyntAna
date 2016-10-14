@@ -130,9 +130,10 @@ public class SyntaticAnalyzer {
 //		ArrayCol =  '[' ']' ArrayCol
 //				| null	
 		if(currentTk.checkType(TokenType.SEPACL)){
+			escreve("ArrayCol = '['" +" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
-				System.out.println("ArrayCol = '[' ']'");	
+				escreveln("']'"+"("+currentTk.getValue()+")");	
 				getToken();
 			}else{
 				erro();
@@ -144,6 +145,7 @@ public class SyntaticAnalyzer {
 	
 	public static void nome(){
 //		Nome = NomeSimples Composicao
+		escreveln("Nome = NomeSimples Composicao");	
 		nomeSimples();
 		composicao();
 	}
@@ -152,9 +154,15 @@ public class SyntaticAnalyzer {
 //		Composicao = '.' 'id' Composicao
 //				| null
 		if(currentTk.checkType(TokenType.SEPPNT)){
-			System.out.println("Composicao = '.' 'id' Composicao");
+			escreve("Composicao = '.' "+" ("+currentTk.getValue()+")");
 			getToken();
-			nome();
+			if(currentTk.checkType(TokenType.ID)){
+				escreveln("'id' "+" ("+currentTk.getValue()+")"+" Composicao");
+				getToken();
+				composicao();
+			}else{
+				erro();
+			}
 		}else{
 			
 		}
@@ -163,6 +171,7 @@ public class SyntaticAnalyzer {
 	public static void nomeSimples(){
 //		NomeSimples = 'id'
 		if(currentTk.checkType(TokenType.ID)){
+			escreveln("NomeSimples = 'id' "+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
@@ -173,7 +182,7 @@ public class SyntaticAnalyzer {
 //		Modificador  = 'static' 
 //				| null
 		if(currentTk.checkType(TokenType.KEYSTC)){
-			System.out.println("Modificador = 'static'");
+			escreveln("Modificador = 'static'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 		}
@@ -181,18 +190,20 @@ public class SyntaticAnalyzer {
 	
 	public void start(){
 //		UnidadeDeCompilacao = DeclaracaoDeClasse
-		System.out.println("UnidadeDeCompilacao = DeclaracaoDeClasse");
+		escreveln("UnidadeDeCompilacao = DeclaracaoDeClasse");
 		getToken();
 		declaracaoDeClasse();
 	}
 	
 	public static void declaracaoDeClasse(){
 //		DeclaracaoDeClasse = Modificador 'class' 'id' CorpoClasse
-		System.out.println("DeclaracaoDeClasse = Modificador 'class' 'id' CorpoClasse");
+		escreve("DeclaracaoDeClasse = Modificador");
 		modificador();
 		if(currentTk.checkType(TokenType.KEYCLS)){
+			escreve(" 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.ID)){
+				escreveln(" 'class'"+" ("+currentTk.getValue()+")"+" CorpoClasse");
 				getToken();
 				corpoClasse();
 			}else{
@@ -207,9 +218,11 @@ public class SyntaticAnalyzer {
 //		CorpoClasse = '{' DeclaracoesCorpoClasse '}'
 		System.out.println("CorpoClasse = '{' DeclaracoesCorpoClasse '}'");
 		if(currentTk.checkType(TokenType.SEPACH)){
+			escreve("CorpoClasse = '{'"+" ("+currentTk.getValue()+")"+"DeclaracoesCorpoClasse");
 			getToken();
 			declaracoesCorpoClasse();
 			if(currentTk.checkType(TokenType.SEPFCH)){
+				escreveln("'}'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -221,7 +234,7 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracoesCorpoClasse(){
 //		DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1
-		System.out.println("DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
+		escreveln("DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
 		declaracaoMembroClasse();
 		declaracaoCorpoClasse1();
 	}
@@ -230,7 +243,7 @@ public class SyntaticAnalyzer {
 //		DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1 
 //				| null
 		if(!currentTk.checkType(TokenType.SEPFCH)){
-			System.out.println("DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
+			escreveln("DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
 			declaracaoMembroClasse();
 			declaracaoCorpoClasse1();
 		}else{
@@ -241,26 +254,26 @@ public class SyntaticAnalyzer {
 	public static void declaracaoMembroClasse(){
 //		DeclaracaoMembroClasse = DeclaracaoDeCampo 
 //				| 'method' DeclaracaoDeMetodo
-		System.out.print("DeclaracaoMembroClasse = ");
 		if(currentTk.checkType(TokenType.KEYMTD)){
-			System.out.println("'method' DeclaracaoDeMetodo");
+			escreveln("DeclaracaoMembroClasse = 'method' "+" ("+currentTk.getValue()+")"+" DeclaracaoDeMetodo");
 			getToken();
 			declaracaoDeMetodo();
 		}else{
-			System.out.println("DeclaracaoDeCampo");
+			escreveln("DeclaracaoMembroClasse = DeclaracaoDeCampo");
 			declaracaoDeCampo();
 		}
 	}
 	
 	public static void declaracaoDeCampo(){
 //		DeclaracaoDeCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'
-		System.out.println("DeclaracaoDeCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'");
 		if(currentTk.checkType(TokenType.KEYATR)){
+			escreve("DeclaracaoDeCampo = 'atr' "+" ("+currentTk.getValue()+")"+" Modificador Tipo DeclaracoesVariavel");
 			getToken();
 			modificador();
 			tipo();
 			declaracoesVariavel();
 			if(currentTk.checkType(TokenType.SEPPEV)){
+				escreveln(" ';'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -270,7 +283,7 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracoesVariavel(){
 //		DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1
-		System.out.println("DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1");
+		escreveln("DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1");
 		declaracaoVariavel();
 		declaracoesVariavel1();
 	}
@@ -279,7 +292,7 @@ public class SyntaticAnalyzer {
 //		DeclaracoesVariavel1 = ','  DeclaracaoVariavel DeclaracoesVariavel1 
 //				| null
 		if(currentTk.checkType(TokenType.SEPVRG)){
-			System.out.println("DeclaracoesVariavel1 = ','  DeclaracaoVariavel DeclaracoesVariavel1 ");
+			escreveln("DeclaracoesVariavel1 = ',' "+" ("+currentTk.getValue()+")"+" DeclaracaoVariavel DeclaracoesVariavel1 ");
 			getToken();
 			declaracaoVariavel();
 			declaracoesVariavel1();
@@ -289,7 +302,7 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracaoVariavel(){
 //		DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1
-		System.out.println("DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1");
+		escreveln("DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1");
 		declaracaoVariavelId();
 		declaracaoVariavel1();
 	}
@@ -298,7 +311,7 @@ public class SyntaticAnalyzer {
 //		DeclaracaoVariavel1 = Atribuicao 
 //				| null
 		if(currentTk.checkType(TokenType.ID)){
-			System.out.println("DeclaracaoVariavel1 = Atribuicao");
+			escreveln("DeclaracaoVariavel1 = Atribuicao");
 			expressaoAtribuicao();
 		}else{
 			
@@ -307,8 +320,8 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracaoVariavelId(){
 //		DeclaracaoVariavelId = 'id' ArrayCol
-		System.out.println("DeclaracaoVariavelId = 'id' ArrayCol");
 		if(currentTk.checkType(TokenType.ID)){
+			escreveln("DeclaracaoVariavelId = 'id'"+" ("+currentTk.getValue()+")"+" ArrayCol");
 			getToken();
 			arrayCol();
 		}else{
@@ -318,14 +331,14 @@ public class SyntaticAnalyzer {
 		
 	public static void declaracaoDeMetodo(){
 //		DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo
-		System.out.println("DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo");
+		escreveln("DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo");
 		cabecalhoMetodo();
 		corpoMetodo();
 	}
 	
 	public static void cabecalhoMetodo(){
 //		CabecalhoMetodo = Modificador Tipo MetodoDeclaracao
-		System.out.println("CabecalhoMetodo = Modificador Tipo MetodoDeclaracao");
+		escreveln("CabecalhoMetodo = Modificador Tipo MetodoDeclaracao");
 		modificador();
 		tipo();
 		metodoDeclaracao();		
@@ -333,13 +346,15 @@ public class SyntaticAnalyzer {
 	
 	public static void metodoDeclaracao(){
 //		MetodoDeclaracao = 'id' '[' ListaDeParametrosFormais ']'
-		System.out.println("MetodoDeclaracao = 'id' '[' ListaDeParametrosFormais ']'");
 		if(currentTk.checkType(TokenType.ID)||currentTk.checkType(TokenType.KEYMAIN)){
+			escreve("MetodoDeclaracao = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve("'['"+" ("+currentTk.getValue()+")"+" ListaDeParametrosFormais");
 				getToken();
 				listaDeParametrosFormais();
 				if(currentTk.checkType(TokenType.SEPFCL)){
+					escreveln(" ']'"+" ("+currentTk.getValue()+")");
 					getToken();
 				}else{
 					erro();
@@ -358,7 +373,7 @@ public class SyntaticAnalyzer {
 		if(currentTk.checkType(TokenType.ID)||currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
 				currentTk.checkType(TokenType.KEYSTR)||currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)
 				||currentTk.checkType(TokenType.KEYVOD)||currentTk.checkType(TokenType.KEYARY)){
-			System.out.println("ListaDeParametrosFormais = ParametrosFormais ListaDeParametrosFormais1");	
+			escreveln("ListaDeParametrosFormais = ParametrosFormais ListaDeParametrosFormais1");	
 			parametrosFormais();
 			listaDeParametrosFormais1();
 		}else{
@@ -370,7 +385,7 @@ public class SyntaticAnalyzer {
 //		ListaDeParametrosFormais1 = ',' ParametrosFormais ListaDeParametrosFormais
 //				|null
 		if(currentTk.checkType(TokenType.SEPVRG)){
-			System.out.println("ListaDeParametrosFormais1 = ',' ParametrosFormais ListaDeParametrosFormais");	
+			escreveln("ListaDeParametrosFormais1 = ','"+" ("+currentTk.getValue()+")"+" ParametrosFormais ListaDeParametrosFormais");	
 			getToken();
 			parametrosFormais();
 			listaDeParametrosFormais();
@@ -381,7 +396,7 @@ public class SyntaticAnalyzer {
 	
 	public static void parametrosFormais(){
 //		ParametrosFormais = Tipo DeclaracaoVariavelId 
-		System.out.println("ParametrosFormais = Tipo DeclaracaoVariavelId");
+		escreveln("ParametrosFormais = Tipo DeclaracaoVariavelId");
 		tipo();
 		declaracaoVariavelId();
 	}
@@ -390,21 +405,22 @@ public class SyntaticAnalyzer {
 //		CorpoMetodo = Bloco 
 //				| ';'
 		if(currentTk.checkType(TokenType.SEPPEV)){
-			System.out.println("CorpoMetodo = ';'");
+			escreveln("CorpoMetodo = ';'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			System.out.println("CorpoMetodo = Bloco ");
+			escreveln("CorpoMetodo = Bloco ");
 			bloco();
 		}
 	}
 
 	public static void bloco(){
 //		Bloco = '{' DeclaracaoDeBloco '}'
-		System.out.println("Bloco = '{' DeclaracaoDeBloco '}'");
 		if(currentTk.checkType(TokenType.SEPACH)){
+			escreve("Bloco = '{'"+" ("+currentTk.getValue()+")"+" DeclaracaoDeBloco");
 			getToken();
 			declaracaoDeBloco();
 			if(currentTk.checkType(TokenType.SEPFCH)){
+				escreveln(" '}'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -416,7 +432,7 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracaoDeBloco(){
 //		DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1
-		System.out.println("DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1");
+		escreveln("DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1");
 		blocoDeclaracao();
 		declaracaoDeBloco1();
 	}
@@ -427,7 +443,7 @@ public class SyntaticAnalyzer {
 		if(!currentTk.checkType(TokenType.SEPFCH)){
 			/*se o currentTk for '}' significa que o bloco acabou, logo estamos no desvio null
 			 caso contrario, para qualquer outro token ainda estamos no bloco*/
-			System.out.println("DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1");
+			escreveln("DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1");
 			declaracaoDeBloco();
 			declaracaoDeBloco1();
 		}else{
@@ -439,10 +455,10 @@ public class SyntaticAnalyzer {
 //		BlocoDeclaracao = DeclaracaoCampo 
 //				| Declaracao
 		if(currentTk.checkType(TokenType.KEYATR)){
-			System.out.println("BlocoDeclaracao = DeclaracaoCampo");
+			escreveln("BlocoDeclaracao = DeclaracaoCampo");
 			declaracaoCampo();
 		}else{
-			System.out.println("BlocoDeclaracao = Declaracao");
+			escreveln("BlocoDeclaracao = Declaracao");
 			declaracao();
 		}
 	}
@@ -450,12 +466,13 @@ public class SyntaticAnalyzer {
 	public static void declaracaoCampo(){
 //		DeclaracaoCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'
 		if(currentTk.checkType(TokenType.KEYATR)){
-			System.out.println("'atr' Modificador Tipo DeclaracoesVariavel ';'");
+			escreve("DeclaracaoCampo = 'atr'"+" ("+currentTk.getValue()+")"+" Modificador Tipo DeclaracoesVariavel");
 			getToken();
 			modificador();
 			tipo();
 			declaracoesVariavel();
 			if(currentTk.checkType(TokenType.SEPPEV)){
+				escreveln(" ';'"+" ("+currentTk.getValue()+")");
 				getToken();				
 			}else{
 				erro();
@@ -471,16 +488,16 @@ public class SyntaticAnalyzer {
 //		        | DeclaracaoFor 
 //		        | DeclaracaoWhile 
 		if(currentTk.checkType(TokenType.KEYIF)){
-			System.out.println("Declaracao = DeclaracaoIf");
+			escreveln("Declaracao = DeclaracaoIf");
 			declaracaoIf();
 		}else if(currentTk.checkType(TokenType.KEYWHL)){
-			System.out.println("Declaracao = DeclaracaoWhile");
+			escreveln("Declaracao = DeclaracaoWhile");
 			declaracaoWhile();
 		}else if(currentTk.checkType(TokenType.KEYFOR)){
-			System.out.println("Declaracao = DeclaracaoFor");
+			escreveln("Declaracao = DeclaracaoFor");
 			declaracaoFor();
 		}else{
-			System.out.println("Declaracao = DeclaracaoSemSubDeclaracaoDireta");
+			escreveln("Declaracao = DeclaracaoSemSubDeclaracaoDireta");
 			declaracaoSemSubDeclaracaoDireta();
 		}
 	}
@@ -492,19 +509,19 @@ public class SyntaticAnalyzer {
 //		        | DeclaracaoReturn 
 //		        | DeclaracaoBreak
 		if(currentTk.checkType(TokenType.SEPACH)){
-			System.out.println("DeclaracaoSemSubDeclaracaoDireta = Bloco");
+			escreveln("DeclaracaoSemSubDeclaracaoDireta = Bloco");
 			bloco();
 		}else if(currentTk.checkType(TokenType.SEPPEV)){
-			System.out.println( "DeclaracaoSemSubDeclaracaoDireta = \';\'");
+			escreveln( "DeclaracaoSemSubDeclaracaoDireta = ';'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else if(currentTk.checkType(TokenType.KEYRET)){
-			System.out.println("DeclaracaoSemSubDeclaracaoDireta = DeclaracaoReturn");
+			escreveln("DeclaracaoSemSubDeclaracaoDireta = DeclaracaoReturn");
 			declaracaoReturn();
 		}else if(currentTk.checkType(TokenType.KEYBRK)){
-			System.out.println("DeclaracaoSemSubDeclaracaoDireta = DeclaracaoBreak");
+			escreveln("DeclaracaoSemSubDeclaracaoDireta = DeclaracaoBreak");
 			declaracaoBreak();
 		}else{
-			System.out.println("DeclaracaoSemSubDeclaracaoDireta = ExpressaoDeclaracao");
+			escreveln("DeclaracaoSemSubDeclaracaoDireta = ExpressaoDeclaracao");
 			expressaoDeclaracao();
 		}
 	}
@@ -517,32 +534,34 @@ public class SyntaticAnalyzer {
 //		        | ExpressaoCriaInstanciaDeClasse 
 
 		if(currentTk.checkType(TokenType.KEYCLL)){
-			System.out.println("ExpressaoDeclaracao = ChamadaMetodo");
+			escreveln("ExpressaoDeclaracao = ChamadaMetodo");
 			chamadaMetodo();
 		}else if(currentTk.checkType(TokenType.OPRMMA)){
-			System.out.println("ExpressaoDeclaracao = ExpressaoIncrementoPre");
+			escreveln("ExpressaoDeclaracao = ExpressaoIncrementoPre");
 			expressaoIncrementoPre();
 		}else if(currentTk.checkType(TokenType.OPRMME)){
-			System.out.println("ExpressaoDeclaracao = ExpressaoDecrementoPre");
+			escreveln("ExpressaoDeclaracao = ExpressaoDecrementoPre");
 			expressaoDecrementoPre();
 		}else if(currentTk.checkType(TokenType.KEYNEW)){
-			System.out.println("ExpressaoDeclaracao = ExpressaoCriaInstanciaDeClasse");
+			escreveln("ExpressaoDeclaracao = ExpressaoCriaInstanciaDeClasse");
 			expressaoCriaInstanciaDeClasse();
 		}else{
-			System.out.println("ExpressaoDeclaracao = Atribuicao ");
+			escreveln("ExpressaoDeclaracao = Atribuicao ");
 			atribuicao();
 		}
 	}	
 	
 	public static void declaracaoIf(){
 //		DeclaracaoIf = 'if' '[' ExpressaoCondicional ']'  Declaracao   DeclaracaoElse
-		System.out.println("DeclaracaoIf = 'if' '[' ExpressaoCondicional ']'  Declaracao   DeclaracaoElse");
 		if(currentTk.checkType(TokenType.KEYIF)){
+			escreve("DeclaracaoIf = 'if'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve(" '['"+" ("+currentTk.getValue()+")"+" ExpressaoCondicional");
 				getToken();
 				expressaoCondicional();
 				if(currentTk.checkType(TokenType.SEPFCL)){
+					escreveln(" ']'"+" ("+currentTk.getValue()+")"+"  Declaracao   DeclaracaoElse");
 					getToken();
 					declaracao();
 					declaracaoElse();
@@ -561,7 +580,7 @@ public class SyntaticAnalyzer {
 //		DeclaracaoElse = 'else' Declaracao
 //				| null
 		if(currentTk.checkType(TokenType.KEYELS)){
-			System.out.println("DeclaracaoElse = 'else' Declaracao");
+			escreveln("DeclaracaoElse = 'else'"+" ("+currentTk.getValue()+")"+" Declaracao");
 			getToken();
 			declaracao();
 		}else{
@@ -571,13 +590,15 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracaoWhile(){
 //		DeclaracaoWhile = 'while' '[' ExpressaoCondicional ']' Declaracao
-		System.out.println("DeclaracaoWhile = 'while' '[' ExpressaoCondicional ']' Declaracao");
 		if(currentTk.checkType(TokenType.KEYWHL)){
+			escreve("DeclaracaoWhile = 'while'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve(" '['"+" ("+currentTk.getValue()+") ExpressaoCondicional");
 				getToken();
 				expressaoCondicional();
 				if(currentTk.checkType(TokenType.SEPFCL)){
+					escreveln(" ']' Declaracao"+" ("+currentTk.getValue()+")");
 					getToken();
 					declaracao();
 				}else{
@@ -593,19 +614,23 @@ public class SyntaticAnalyzer {
 	
 	public static void declaracaoFor(){
 //		DeclaracaoFor = 'for' '[' InicializadorFor ';' LimiteSuperiorFor ';' PassoFor ']' Declaracao
-		System.out.println("DeclaracaoFor = 'for' '[' InicializadorFor ';' LimiteSuperiorFor ';' PassoFor ']' Declaracao");
 		if(currentTk.checkType(TokenType.KEYFOR)){
+			escreve("DeclaracaoFor = 'for'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve("'['"+" ("+currentTk.getValue()+") InicializadorFor");
 				getToken();
 				inicializadorFor();
 				if(currentTk.checkType(TokenType.SEPPEV)){
+					escreve(" ';' LimiteSuperiorFor"+" ("+currentTk.getValue()+")");
 					getToken();
 					limiteSuperiorFor();
 					if(currentTk.checkType(TokenType.SEPPEV)){
+						escreve(" ';' PassoFor"+" ("+currentTk.getValue()+")");
 						getToken();
 						passoFor();
 						if(currentTk.checkType(TokenType.SEPFCL)){
+							escreveln(" ']' Declaracao"+" ("+currentTk.getValue()+")");
 							getToken();
 							declaracao();
 						}else{
@@ -627,12 +652,14 @@ public class SyntaticAnalyzer {
 	
 	public static void inicializadorFor(){
 //		InicializadorFor = 'int' 'id' '=' ValorInicializadorFor
-		System.out.println("InicializadorFor = 'int' 'id' '=' ValorInicializadorFor");
 		if(currentTk.checkType(TokenType.KEYINT)){
+			escreve("InicializadorFor = 'int'"+" ("+currentTk.getValue()+")");
 			getToken();			
 			if(currentTk.checkType(TokenType.ID)){
+				escreve("'id'"+" ("+currentTk.getValue()+")");
 				getToken();
 				if(currentTk.checkType(TokenType.OPRATR)){
+					escreveln(" '='"+" ("+currentTk.getValue()+")"+" ValorInicializadorFor");
 					getToken();
 					valorInicializadorFor();
 				}else{
@@ -650,10 +677,10 @@ public class SyntaticAnalyzer {
 //		ValorInicializadorFor = Literal
 //				| 'id'
 		if(currentTk.checkType(TokenType.ID)){
-			System.out.println("ValorInicializadorFor = 'id'");
+			escreveln("ValorInicializadorFor = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			System.out.println("ValorInicializadorFor = Literal");
+			escreveln("ValorInicializadorFor = Literal");
 			literal();
 		}
 	}
@@ -662,10 +689,10 @@ public class SyntaticAnalyzer {
 //		LimiteSuperiorFor = ConstanteNumerica 
 //				| Nome
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			System.out.println("LimiteSuperiorFor = ConstanteNumerica");
+			escreveln("LimiteSuperiorFor = ConstanteNumerica");
 			constanteNumerica();
 		}else{
-			System.out.println("LimiteSuperiorFor = Nome");
+			escreveln("LimiteSuperiorFor = Nome");
 			nome();
 		}
 	}
@@ -674,10 +701,10 @@ public class SyntaticAnalyzer {
 //		PassoFor = ConstanteNumerica 
 //				| Nome
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			System.out.println("PassoFor = ConstanteNumerica");
+			escreveln("PassoFor = ConstanteNumerica");
 			constanteNumerica();
 		}else{
-			System.out.println("PassoFor = Nome");
+			escreveln("PassoFor = Nome");
 			nome();
 		}
 	}
@@ -686,14 +713,15 @@ public class SyntaticAnalyzer {
 //		DeclaracaoReturn = 'return' ExpressaoAtribuicao ';' 
 //				| 'return' ';'
 		if(currentTk.checkType(TokenType.KEYRET)){
+			escreve("DeclaracaoReturn = 'return'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPPEV)){
-				System.out.println("DeclaracaoReturn = 'return' ';' ");
+				escreveln(" ';'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
-				System.out.println("DeclaracaoReturn = 'return' ExpressaoAtribuicao ';'");
 				expressaoAtribuicao();
 				if(currentTk.checkType(TokenType.SEPPEV)){
+					escreveln(" ExpressaoAtribuicao ';' "+" ("+currentTk.getValue()+")");
 					getToken();
 				}else{
 					erro();
@@ -708,14 +736,15 @@ public class SyntaticAnalyzer {
 //		DeclaracaoBreak = 'break' ExpressaoAtribuicao ';' 
 //				| 'break' ';'
 		if(currentTk.checkType(TokenType.KEYBRK)){
+			escreve("DeclaracaoReturn = 'break'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPPEV)){
-				System.out.println("DeclaracaoReturn = 'break' ';' ");
+				escreveln(" ';'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
-				System.out.println("DeclaracaoReturn = 'break' ExpressaoAtribuicao ';'");
 				expressaoAtribuicao();
 				if(currentTk.checkType(TokenType.SEPPEV)){
+					escreveln(" ExpressaoAtribuicao ';' "+" ("+currentTk.getValue()+")");
 					getToken();
 				}else{
 					erro();
@@ -728,15 +757,18 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoCriaInstanciaDeClasse(){
 //		ExpressaoCriaInstanciaDeClasse = 'new' 'id' '[' ListaDeArgumentos ']'
-		System.out.println("ExpressaoCriaInstanciaDeClasse = 'new' 'id' '[' ListaDeArgumentos ']'");
 		if(currentTk.checkType(TokenType.KEYNEW)){
+			escreve("ExpressaoCriaInstanciaDeClasse = 'new'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.ID)){
+				escreve(" 'id'"+" ("+currentTk.getValue()+")");
 				getToken();
 				if(currentTk.checkType(TokenType.SEPACL)){
+					escreve(" '[' ListaDeArgumentos"+" ("+currentTk.getValue()+")");
 					getToken();
 					listaDeArgumentos();
 					if(currentTk.checkType(TokenType.SEPFCL)){
+						escreveln(" ']'"+" ("+currentTk.getValue()+")");
 						getToken();
 					}else{
 //						erro
@@ -756,7 +788,7 @@ public class SyntaticAnalyzer {
 //		ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1
 //				| null
 		if(!currentTk.checkType(TokenType.SEPFCL)){
-			System.out.println("ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1");
+			escreveln("ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1");
 			expressaoAtribuicao();
 			listaDeArgumentos1();
 		}else{
@@ -769,7 +801,7 @@ public class SyntaticAnalyzer {
 //		ListaDeArgumentos1 = ',' ListaDeArgumentos   ListaDeArgumentos1 
 //				| null 
 		if(currentTk.checkType(TokenType.SEPVRG)){
-			System.out.println("ListaDeArgumentos1 = ',' ListaDeArgumentos   ListaDeArgumentos1 ");
+			escreveln("ListaDeArgumentos1 = ','"+" ("+currentTk.getValue()+")"+" ListaDeArgumentos   ListaDeArgumentos1 ");
 			getToken();
 			listaDeArgumentos();
 			listaDeArgumentos1();
@@ -781,15 +813,18 @@ public class SyntaticAnalyzer {
 	public static void expressaoCriaArray(){
 //		ExpressaoCriaArray = 'array' '[' Tipo ',' TamanhoArray ']'
 		if(currentTk.checkType(TokenType.KEYARY)){
-			System.out.println("ExpressaoCriaArray = 'array' '[' Tipo ',' TtamanhoArray ']'");
+			escreve("ExpressaoCriaArray = 'array'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve("'[' Tipo"+" ("+currentTk.getValue()+")");
 				getToken();
 				tipo();
 				if(currentTk.checkType(TokenType.SEPVRG)){
+					escreve(" ',' TamanhoArray"+" ("+currentTk.getValue()+")");
 					getToken();
 					tamanhoArray();
 					if(currentTk.checkType(TokenType.SEPFCL)){
+						escreveln(" ']'"+" ("+currentTk.getValue()+")");
 						getToken();
 					}else{
 						erro();
@@ -809,25 +844,26 @@ public class SyntaticAnalyzer {
 //		TamanhoArray = 'id'
 //				| 'cntInt'
 		if(currentTk.checkType(TokenType.ID)){
-			System.out.println("TamanhoArray = 'id'");
+			escreveln("TamanhoArray = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else if(currentTk.checkType(TokenType.KEYINT)){
-			System.out.println("TamanhoArray = 'cntInt'");
+			escreveln("TamanhoArray = 'cntInt'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}
 	}
 	
 	public static void chamadaMetodo(){
 //		ChamadaMetodo = 'call' NomeMetodo '[' ListaDeArgumentos ']'
-		System.out.println("ChamadaMetodo = 'call' NomeMetodo '[' ListaDeArgumentos ']'");
-		
 		if(currentTk.checkType(TokenType.KEYCLL)){
+			escreve("ChamadaMetodo = 'call'"+" ("+currentTk.getValue()+")");
 			getToken();	
 			nomeMetodo();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve(" NomeMetodo '['"+" ("+currentTk.getValue()+")");
 				getToken();
 				listaDeArgumentos();
 				if(currentTk.checkType(TokenType.SEPFCL)){
+					escreveln(" ListaDeArgumentos ']'"+" ("+currentTk.getValue()+")");
 					getToken();				
 				}else{
 					erro();
@@ -846,10 +882,10 @@ public class SyntaticAnalyzer {
 //					| 'read'
 		
 		if(currentTk.checkType(TokenType.KEYPRT)||currentTk.checkType(TokenType.KEYREA)){
-			System.out.println("NomeMetodo = "+currentTk.getValue());
+			escreveln("NomeMetodo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			System.out.println("NomeMetodo = Nome NomeMetodo1");
+			escreveln("NomeMetodo = Nome NomeMetodo1");
 			nome();
 			nomeMetodo1();
 		}
@@ -859,7 +895,7 @@ public class SyntaticAnalyzer {
 //		NomeMetodo1 = '.' NomeMetodo
 //				| null
 		if(currentTk.checkType(TokenType.SEPPNT)){
-			System.out.println("NomeMetodo1 = '.' NomeMetodo");
+			escreveln("NomeMetodo1 = '.'"+" ("+currentTk.getValue()+")"+" NomeMetodo");
 			getToken();
 			nomeMetodo();
 		}
@@ -867,14 +903,16 @@ public class SyntaticAnalyzer {
 	
 	public static void acessoArray(){
 //		AcessoArray = 'aaray' Nome '[' ExpressaoAtribuicao ']'
-		System.out.println("AcessoArray = 'aaray' Nome '[' ExpressaoAtribuicao ']'");
 		if(currentTk.checkType(TokenType.KEYAAY)){
+			escreve("AcessoArray = 'aaray'"+" ("+currentTk.getValue()+")");
 			getToken();	
 			nome();
 			if(currentTk.checkType(TokenType.SEPACL)){
+				escreve("Nome '['"+" ("+currentTk.getValue()+")");
 				getToken();
 				expressaoAtribuicao();
 				if(currentTk.checkType(TokenType.SEPFCL)){
+					escreveln("ExpressaoAtribuicao ']'"+" ("+currentTk.getValue()+")");
 					getToken();				
 				}else{
 					erro();
@@ -891,10 +929,10 @@ public class SyntaticAnalyzer {
 //		Primario = PrimairoSemNovoArray 
 //				| ExpressaoCriaArray
 		if(currentTk.checkType(TokenType.KEYARY)){
-			System.out.println("Primario = ExpressaoCriaArray ");
+			escreveln("Primario = ExpressaoCriaArray ");
 			expressaoCriaArray();
 		}else{
-			System.out.println("Primario = PrimairoSemNovoArray ");
+			escreveln("Primario = PrimairoSemNovoArray ");
 			primairoSemNovoArray();
 		}
 	}
@@ -908,29 +946,30 @@ public class SyntaticAnalyzer {
 //				| AcessoArray
 
 		if(currentTk.checkType(TokenType.KEYTHS)){
-			System.out.println("PrimairoSemNovoArray = 'this'");
+			escreveln("PrimairoSemNovoArray = 'this'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else if(currentTk.checkType(TokenType.SEPACL)){
-			System.out.println("PrimairoSemNovoArray = '[' ExpressaoAtribuicao ']'");
+			escreve("PrimairoSemNovoArray = '['"+" ("+currentTk.getValue()+")");
 			getToken();
 			expressaoAtribuicao();
 			if(currentTk.checkType(TokenType.SEPFCL)){
+				escreveln("ExpressaoAtribuicao ']'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
 			}
 		}else if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTSTR)||currentTk.checkType(TokenType.CNTCHR)||
 				currentTk.checkType(TokenType.CTNINT)||currentTk.checkType(TokenType.CTNDBL)){
-			System.out.println("PrimairoSemNovoArray = Literal");
+			escreveln("PrimairoSemNovoArray = Literal");
 			literal();
 		}else if(currentTk.checkType(TokenType.KEYNEW)){
-			System.out.println("PrimairoSemNovoArray = ExpressaoCriaInstanciaDeClasse");
+			escreveln("PrimairoSemNovoArray = ExpressaoCriaInstanciaDeClasse");
 			expressaoCriaInstanciaDeClasse();
 		}else if(currentTk.checkType(TokenType.KEYCLL)){
-			System.out.println("PrimairoSemNovoArray = ChamadaMetodo");
+			escreveln("PrimairoSemNovoArray = ChamadaMetodo");
 			chamadaMetodo();
 		}else if(currentTk.checkType(TokenType.KEYAAY)){
-			System.out.println("PrimairoSemNovoArray = AcessoArray");
+			escreveln("PrimairoSemNovoArray = AcessoArray");
 			acessoArray();
 		}else{
 			erro();
@@ -941,10 +980,11 @@ public class SyntaticAnalyzer {
 //		Argumentos = '[' ExpressaoAtribuicao ']'
 //				| null
 		if(currentTk.checkType(TokenType.SEPACL)){
-			System.out.println("Argumentos = '[' ExpressaoAtribuicao ']'");
+			escreve("Argumentos = '['"+" ("+currentTk.getValue()+")");
 			getToken();
 			expressaoAtribuicao();
 			if(currentTk.checkType(TokenType.SEPFCL)){
+				escreveln(" ExpressaoAtribuicao ']'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -956,9 +996,9 @@ public class SyntaticAnalyzer {
 	
 	public static void atribuicao(){
 //		Atribuicao = LadoEsquerdo '=' ExpressaoAtribuicao 
-		System.out.println("Atribuicao = LadoEsquerdo '=' ExpressaoAtribuicao");
 		ladoEsquerdo();
 		if(currentTk.checkType(TokenType.OPRATR)){
+			escreveln("Atribuicao = LadoEsquerdo '='"+" ("+currentTk.getValue()+")"+" ExpressaoAtribuicao ");
 			getToken();
 			expressaoAtribuicao();
 		}else{
@@ -970,9 +1010,10 @@ public class SyntaticAnalyzer {
 //		LadoEsquerdo = AcessoArray
 //				| Nome1 Argumentos
 		if(currentTk.checkType(TokenType.KEYAAY)){
-			System.out.println("LadoEsquerdo = AcessoArray");
+			escreveln("LadoEsquerdo = AcessoArray");
 			acessoArray();
 		}else{
+			escreveln("LadoEsquerdo = Nome1 Argumentos");
 			nome1();
 			argumentos();
 		}
@@ -983,13 +1024,13 @@ public class SyntaticAnalyzer {
 //				| Literal Nome1
 //				| null	
 		if(currentTk.checkType(TokenType.ID)){
-			System.out.println("Nome1 = 'id'");
+			escreveln("Nome1 = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 			nome1();
 		}else if(currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYLGC)||
 				currentTk.checkType(TokenType.KEYCHR)||currentTk.checkType(TokenType.KEYSTR)){
+			escreveln("Nome1 = Literal");
 			getToken();
-			System.out.println("Nome1 = Literal");
 			nome1();
 		}else{
 			
@@ -998,13 +1039,13 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoAtribuicao(){
 //		ExpressaoAtribuicao = ExpressaoCondicional
-		System.out.println("ExpressaoAtribuicao = ExpressaoCondicional");
+		escreveln("ExpressaoAtribuicao = ExpressaoCondicional");
 		expressaoCondicional();
 	}
 	
 	public static void expressaoCondicional(){
 //		ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1
-		System.out.println("ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1");
+		escreveln("ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1");
 		expressaoOuCondicional();
 		expressaoCondicional1();
 	}

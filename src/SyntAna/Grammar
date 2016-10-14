@@ -1,3 +1,5 @@
++" ("+currentTk.getValue()+")"
+
 Literal = Constante 
 		| ConstanteNumerica
 		
