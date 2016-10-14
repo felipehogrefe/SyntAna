@@ -1,0 +1,5 @@
+class alo{
+		method void main[]{
+			call print["alo mundo"];
+		}
+	}

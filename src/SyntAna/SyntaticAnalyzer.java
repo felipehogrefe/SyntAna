@@ -1,5 +1,7 @@
 package SyntAna;
 
+import java.io.PrintWriter;
+
 import LexAna.LexicalAnalyzer;
 import LexAna.Token;
 import LexAna.TokenType;
@@ -7,6 +9,7 @@ import LexAna.TokenType;
 public class SyntaticAnalyzer {
 	static LexicalAnalyzer la;
 	static Token currentTk;
+	private static PrintWriter gravarArq;
 	
 	private static void getToken(){
 		if(la.isOver()){
@@ -15,8 +18,9 @@ public class SyntaticAnalyzer {
 		System.out.println(currentTk.getValue());
 	}
 	
-	SyntaticAnalyzer(LexicalAnalyzer la){
+	SyntaticAnalyzer(LexicalAnalyzer la, PrintWriter gravarArq){
 		this.la = la;
+		this.gravarArq = gravarArq;
 	}
 	
 	static void erro(){
@@ -24,15 +28,23 @@ public class SyntaticAnalyzer {
 		System.exit(1);
 	}
 	
+	static void escreve(String str){
+		gravarArq.print(str);
+	}
+	
+	static void escreveln(String str){
+		gravarArq.println(str);
+	}
+	
 	public static void literal(){
 //		Literal = Constante 
 //				| ConstanteNumerica
-		System.out.print("Literal = ");
+		
 		if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTCHR)||currentTk.checkType(TokenType.CNTSTR)){
-			System.out.println("Constante");
+			escreveln("Constante");
 			constante();
 		}else if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			System.out.println("ConstanteNumerica");
+			escreveln("Literal = ConstanteNumerica");
 			constanteNumerica();
 		}else{
 			erro();
@@ -42,10 +54,9 @@ public class SyntaticAnalyzer {
 	public static void constante(){
 //		Constante = 'cntLgc' 
 //				| 'cntChr' 
-//				| 'cntStr'
-		System.out.print("Constante = ");		
+//				| 'cntStr'	
 		if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTCHR)||currentTk.checkType(TokenType.CNTSTR)){
-			System.out.println(currentTk.getValue());
+			escreveln("Constante = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
@@ -55,9 +66,8 @@ public class SyntaticAnalyzer {
 	public static void constanteNumerica(){
 //		ConstanteNumerica = 'ctnInt' 
 //				| 'ctnDbl
-		System.out.print("ConstanteNumerica = ");	
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			System.out.println(currentTk.getCategory());
+			escreveln("ConstanteNumerica = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
@@ -72,16 +82,16 @@ public class SyntaticAnalyzer {
 //				| 'array'
 		if(currentTk.checkType(TokenType.KEYARY)){
 			getToken();
-			System.out.println("Tipo = 'array'");	
+			escreveln("Tipo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");	
 		}else if(currentTk.checkType(TokenType.KEYVOD)){
 			getToken();
-			System.out.println("Tipo = 'void'");	
+			escreveln("Tipo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");	
 		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||currentTk.checkType(TokenType.KEYSTR)||
 				currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)){
-			System.out.println("Tipo = TipoPrimitivo");	
+			escreveln("Tipo = TipoPrimitivo");	
 			tipoPrimitivo();
 		}else if(currentTk.checkType(TokenType.ID)){
-			System.out.println("Tipo = Nome");	
+			escreveln("Tipo = Nome");	
 			nome();
 		}else{
 			erro();	
@@ -94,11 +104,11 @@ public class SyntaticAnalyzer {
 //				| 'tkChr' 
 //				| 'tkStr' 	
 		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
-			System.out.println("TipoPrimitivo = TipoNumerico");	
+			escreveln("TipoPrimitivo = TipoNumerico");	
 			tipoNumerico();
 		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
 				currentTk.checkType(TokenType.KEYSTR)){
-			System.out.println("TipoPrimitivo = "+currentTk.getValue());
+			escreveln("TipoPrimitivo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
@@ -108,9 +118,8 @@ public class SyntaticAnalyzer {
 	public static void tipoNumerico(){
 //		TipoNumerico =  'tkInt' 
 //				| 'tkDbl'
-		System.out.print("TipoNumerico = ");
 		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
-			System.out.println(currentTk.getValue());
+			escreveln("TipoNumerico = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();

@@ -1,0 +1,18 @@
+class fibo {
+	method void main[]{
+    	int num1 = 1;
+        int num2 = 0;
+		call funFibo[num1,num2];
+   	}
+	method static void funFibo[int num1, int num2]{
+        int lim = call read[];
+		call print[num2];
+		call print[num1];
+		int lim1 = lim-1;
+		for[int i = 0;lim1;1]{
+          	num1 = num1 + num2;
+           	num2 = num1 - num2;
+           	call print[num1];
+		}
+    }
+}

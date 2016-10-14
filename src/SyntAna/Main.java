@@ -18,11 +18,10 @@ public class Main {
 		
 //		la.printFile();
 		
-		SyntaticAnalyzer sa = new SyntaticAnalyzer(la);
+		SyntaticAnalyzer sa = new SyntaticAnalyzer(la,gravarArq);
 		
 		sa.start();
-		
-
+	
 		gravarArq.println("---------ALO---------");
 		
 //		while(la.isOver()){

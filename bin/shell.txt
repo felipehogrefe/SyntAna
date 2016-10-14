@@ -1,0 +1,35 @@
+class sSort{
+	method void main[]{
+		int n = call read[];
+		a = array[int,n];
+		n1 = n-1;
+		for[int i = 0 ; n1 ; 1]{
+			aarray a[i] = call read[];
+		}
+		a = call shellSort[a];
+		call print[a];			
+	}
+	method static void shellSort[array a]{
+		int t = call a.getLength[];
+		int h = 1;
+		while[h < t]{
+			h = h * 3 + 1;
+		}
+		h = h / 3;
+		int c = 0;
+		int j = 0;
+		while[h > 0]{
+			int t1 = t-1;
+			for[int i = h ; t1 ; 1]{
+				c = aarray a[i];
+				j = i;
+				while[j >= h && aarray a[j-h] > c]{
+					aarray a[j] = aarray a[j - h];
+					j = j - h;
+				}
+				aarray a[j] = c;
+			}
+			h = h / 2;
+		}
+	}
+}
