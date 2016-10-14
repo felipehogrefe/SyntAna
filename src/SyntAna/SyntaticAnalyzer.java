@@ -24,14 +24,6 @@ public class SyntaticAnalyzer {
 		System.exit(1);
 	}
 	
-	public void start(){
-//		UnidadeDeCompilacao = DeclaracaoDeClasse
-		System.out.println("UnidadeDeCompilacao = DeclaracaoDeClasse");
-		getToken();
-		declaracaoDeClasse();
-	}
-
-	
 	public static void literal(){
 //		Literal = Constante 
 //				| ConstanteNumerica
@@ -125,6 +117,22 @@ public class SyntaticAnalyzer {
 		}
 	}	
 	
+	public static void arrayCol(){
+//		ArrayCol =  '[' ']' ArrayCol
+//				| null	
+		if(currentTk.checkType(TokenType.SEPACL)){
+			getToken();
+			if(currentTk.checkType(TokenType.SEPACL)){
+				System.out.println("ArrayCol = '[' ']'");	
+				getToken();
+			}else{
+				erro();
+			}
+		}else{
+			
+		}
+	}
+	
 	public static void nome(){
 //		Nome = NomeSimples Composicao
 		nomeSimples();
@@ -160,6 +168,13 @@ public class SyntaticAnalyzer {
 			getToken();
 		}else{
 		}
+	}
+	
+	public void start(){
+//		UnidadeDeCompilacao = DeclaracaoDeClasse
+		System.out.println("UnidadeDeCompilacao = DeclaracaoDeClasse");
+		getToken();
+		declaracaoDeClasse();
 	}
 	
 	public static void declaracaoDeClasse(){
@@ -291,23 +306,7 @@ public class SyntaticAnalyzer {
 			erro();
 		}
 	}
-	
-	public static void arrayCol(){
-//		ArrayCol =  '[' ']' ArrayCol
-//				| null	
-		if(currentTk.checkType(TokenType.SEPACL)){
-			getToken();
-			if(currentTk.checkType(TokenType.SEPACL)){
-				System.out.println("ArrayCol = '[' ']'");	
-				getToken();
-			}else{
-				erro();
-			}
-		}else{
-					
-		}
-	}
-	
+		
 	public static void declaracaoDeMetodo(){
 //		DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo
 		System.out.println("DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo");
@@ -371,7 +370,6 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	
 	public static void parametrosFormais(){
 //		ParametrosFormais = Tipo DeclaracaoVariavelId 
 		System.out.println("ParametrosFormais = Tipo DeclaracaoVariavelId");
@@ -390,28 +388,7 @@ public class SyntaticAnalyzer {
 			bloco();
 		}
 	}
-	
-//	public static void DECCONSTRU(){
-////		DECCONSTRU = 'id' '[' LISTPARAMFORMAL ']'
-//		System.out.println("DECCONSTRU = 'id' '[' LISTPARAMFORMAL ']'");
-//		if(currentTk.checkType(TokenType.ID)){
-//			getToken();
-//			if(currentTk.checkType(TokenType.SEPACL)){
-//				getToken();
-//				LISTPARAMFORMAL();
-//				if(currentTk.checkType(TokenType.SEPFCL)){
-//					getToken();
-//				}else{
-////					erro
-//				}
-//			}else{
-//			System.out.println(currentTk.getValue());
-//			}
-//		}else{
-//				System.out.println(currentTk.getValue());
-//		}
-//	}
-	
+
 	public static void bloco(){
 //		Bloco = '{' DeclaracaoDeBloco '}'
 		System.out.println("Bloco = '{' DeclaracaoDeBloco '}'");
@@ -449,7 +426,6 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-
 	public static void blocoDeclaracao(){
 //		BlocoDeclaracao = DeclaracaoCampo 
 //				| Declaracao
@@ -478,7 +454,6 @@ public class SyntaticAnalyzer {
 		}else{
 			erro();
 		}
-		
 	}
 	
 	public static void declaracao(){
@@ -523,7 +498,6 @@ public class SyntaticAnalyzer {
 			System.out.println("DeclaracaoSemSubDeclaracaoDireta = ExpressaoDeclaracao");
 			expressaoDeclaracao();
 		}
-		
 	}
 	
 	public static void expressaoDeclaracao(){
@@ -972,7 +946,7 @@ public class SyntaticAnalyzer {
 	}
 	
 	public static void atribuicao(){
-//		Atribuicao = Nome1 'id' Argumentos '=' ExpressaoAtribuicao 
+//		Atribuicao = LadoEsquerdo '=' ExpressaoAtribuicao 
 		System.out.println("Atribuicao = LadoEsquerdo '=' ExpressaoAtribuicao");
 		ladoEsquerdo();
 		if(currentTk.checkType(TokenType.OPRATR)){
@@ -1245,8 +1219,7 @@ public class SyntaticAnalyzer {
 //		ExpressaoMultiplicativa1 = ExpressaoMultiplicacao 
 //				| ExpressaoDivisao 
 //				| ExpressaoModulo
-//				| null
-		
+//				| null	
 		if(currentTk.checkType(TokenType.OPRMTL)){
 			System.out.println("ExpressaoMultiplicacao1 = ExpressaoMultiplicacao ");
 			expressaoMultiplicacao();
@@ -1338,9 +1311,9 @@ public class SyntaticAnalyzer {
 		}	
 	}
 	
-	public static void EXPRINCRPOS(){
-//		EXPRINCRPOS = EXPRPOSF '++'
-		System.out.println("EXPRDECREPOS = EXPRPOSF '++'");
+	public static void expressaoIncrementoPos(){
+//		ExpressaoIncrementoPos = ExpressaoPosFixada '++'
+		System.out.println("ExpressaoIncrementoPos = ExpressaoPosFixada '++'");
 		expressaoPosFixada();
 		if(currentTk.checkType(TokenType.OPRMMA)){
 			getToken();

@@ -1,39 +1,40 @@
-*Literal = Constante 
+Literal = Constante 
 		| ConstanteNumerica
 		
-*Constante = 'cntLgc' 
+Constante = 'cntLgc' 
 		| 'cntChr' 
 		| 'cntStr'
 
-*ConstanteNumerica = 'ctnInt' 
+ConstanteNumerica = 'ctnInt' 
 		| 'ctnDbl' 
 
-*Tipo = TipoPrimitivo 
+Tipo = TipoPrimitivo 
 		| Nome
 		| 'void'
+		| 'array'
 
-*TipoPrimitivo = TipoNumerico 
+TipoPrimitivo = TipoNumerico 
 		| 'tkLgc'
 		| 'tkChr' 
 		| 'tkStr' 
 
-*TipoNumerico =  'tkInt' 
+TipoNumerico =  'tkInt' 
 		| 'tkDbl'
 		
-*ArrayCol =  '[' ']' ArrayCol
+ArrayCol =  '[' ']' ArrayCol
 		| null		
 
-*Nome = NomeSimples Composicao
+Nome = NomeSimples Composicao
 
-*Composicao = '.' 'id' Composicao
+Composicao = '.' 'id' Composicao
 		|null
 
-*NomeSimples = 'id'
+NomeSimples = 'id'
 
-*Modificador  = 'static' 
+Modificador  = 'static' 
 		| null
 
-*UnidadeDeCompilacao = DeclaracaoDeClasse
+UnidadeDeCompilacao = DeclaracaoDeClasse
 
 DeclaracaoDeClasse = Modificador 'class' 'id' CorpoClasse
 
@@ -171,9 +172,13 @@ PrimairoSemNovoArray = Literal
 Argumentos = '[' ExpressaoAtribuicao ']'
 		| null
 		
-Atribuicao = Nome1 'id' Argumentos '=' ExpressaoAtribuicao 
+Atribuicao = LadoEsquerdo '=' ExpressaoAtribuicao 
+
+LadoEsquerdo = AcessoArray
+		| Nome1 Argumentos
 
 Nome1 = 'id' Nome1
+		| Literal Nome1
 		| null
 
 ExpressaoAtribuicao = ExpressaoCondicional 
@@ -250,10 +255,10 @@ ExpressaoUnaria = ExpressaoIncrementoPre
 		| '+' ExpressaoUnaria
 		| '-' ExpressaoUnaria 
 		| ExpressaoPosFixada
+		
+ExpressaoIncrementoPos = ExpressaoPosFixada '++'
 
 ExpressaoDecrementoPos = ExpressaoPosFixada '--'
-
-ExpressaoIncrementoPos = ExpressaoPosFixada '++'
 
 ExpressaoPosFixada = Primario PosFixo
 		| Nome PosFixo

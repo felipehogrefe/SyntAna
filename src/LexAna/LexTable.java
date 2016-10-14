@@ -25,7 +25,6 @@ public class LexTable {
 		lMap.put("int", TokenType.KEYINT);
 		lMap.put("static", TokenType.KEYSTC);
 		lMap.put("char", TokenType.KEYCHR);
-		lMap.put("long", TokenType.KEYLNG);
 		lMap.put("class", TokenType.KEYCLS);
 		lMap.put("while", TokenType.KEYWHL);
 		lMap.put("for", TokenType.KEYFOR);
@@ -38,6 +37,7 @@ public class LexTable {
 		lMap.put("call",TokenType.KEYCLL);
 		lMap.put("aarray",TokenType.KEYAAY);
 		lMap.put("array",TokenType.KEYARY);
+		lMap.put("string",TokenType.KEYSTR);
 		
 		
 
@@ -64,8 +64,6 @@ public class LexTable {
 		lMap.put("<=", TokenType.OPRMEI);
 		lMap.put(">=", TokenType.OPRMAI);
 		lMap.put("!=", TokenType.OPRDIF);
-		lMap.put("&&", TokenType.OPRECD);
-		lMap.put("||", TokenType.OPROCD);
 		lMap.put("++", TokenType.OPRMMA);
 		lMap.put("--", TokenType.OPRMME);
 		lMap.put("+", TokenType.OPRADC);
@@ -73,13 +71,8 @@ public class LexTable {
 		lMap.put("*", TokenType.OPRMTL);
 		lMap.put("/", TokenType.OPRDIV);
 		lMap.put("&", TokenType.OPRE);
-		lMap.put("^", TokenType.OPREOR);
+		lMap.put("&&", TokenType.OPRECD);
 		lMap.put("%", TokenType.OPRMOD);
-		lMap.put("+=", TokenType.OPRICI);
-		lMap.put("-=", TokenType.OPRDCI);
-		lMap.put("*=", TokenType.OPRMTI);
-		lMap.put("/=", TokenType.OPRDVI);
-		lMap.put("|", TokenType.OPRIOR);
 		
 		//simbolos que compoe a linguagem
 		//!|%|^|&|*|(|)|-|+|=|{|}|||~|[|]|\|;|'|:|"|<|>|?|,|.|/|#|@|`|_
