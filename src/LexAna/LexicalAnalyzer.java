@@ -130,6 +130,7 @@ public class LexicalAnalyzer {
 				break;
 			case '=':
 			case '<':
+			case '>':
 			case '!':
 			case '~':
 			case '^':
