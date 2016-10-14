@@ -1054,10 +1054,11 @@ public class SyntaticAnalyzer {
 //		ExpressaoCondicional1 = '?' Expressao ':' ExpressaoCondicional
 //				| null
 		if(currentTk.checkType(TokenType.OPRTRI)){
-			System.out.println("ExpressaoCondicional1 = '?' Expressao ':' ExpressaoCondicional");
+			escreve("ExpressaoCondicional1 = '?'"+" ("+currentTk.getValue()+")");
 			getToken();
 			expressao();
 			if(currentTk.checkType(TokenType.SEPDPT)){
+				escreveln(" Expressao ':'"+" ("+currentTk.getValue()+")"+" ExpressaoCondicional");
 				getToken();
 				expressaoCondicional();
 			}else{
@@ -1068,7 +1069,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoOuCondicional(){
 //		ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1
-		System.out.println("ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1");
+		escreveln("ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1");
 		expressaoECondicional();
 		expressaoOuCondicional1();
 	}
@@ -1078,7 +1079,7 @@ public class SyntaticAnalyzer {
 //				| null 
 		
 		if(currentTk.checkType(TokenType.OPROCD)){
-			System.out.println("ExpressaoOuCondicional1 = '||' ExpressaoCondicional   ExpressaoOuCondicional1 ");
+			escreveln("ExpressaoOuCondicional1 = '||'"+" ("+currentTk.getValue()+")"+" ExpressaoCondicional   ExpressaoOuCondicional1 ");
 			getToken();
 			expressaoCondicional();
 			expressaoOuCondicional1();
@@ -1089,7 +1090,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoECondicional(){
 //		ExpressaoECondicional = Expressao   ExpressaoECondicional1 
-		System.out.println("ExpressaoECondicional = Expressao   ExpressaoECondicional1");
+		escreveln("ExpressaoECondicional = Expressao   ExpressaoECondicional1");
 		expressao();
 		expressaoECondicional1();
 	}
@@ -1098,7 +1099,7 @@ public class SyntaticAnalyzer {
 //		ExpressaoECondicional1 = '&&' Expressao   ExpressaoECondicional1
 //				| null 
 		if(currentTk.checkType(TokenType.OPRECD)){
-			System.out.println("ExpressaoECondicional1 = '&&' Expressao   ExpressaoECondicional1");
+			escreveln("ExpressaoECondicional1 = '&&'"+" ("+currentTk.getValue()+")"+" Expressao   ExpressaoECondicional1");
 			getToken();
 			expressao();
 			expressaoECondicional1();
@@ -1108,7 +1109,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressao(){
 //		Expressao = ExpressaoEqualidade   Expressao1
-		System.out.println("Expressao = ExpressaoEqualidade   Expressao1");
+		escreveln("Expressao = ExpressaoEqualidade   Expressao1");
 		expressaoEqualidade();
 		expressao1();
 	}
@@ -1117,7 +1118,7 @@ public class SyntaticAnalyzer {
 //		Expressao1 = '&' ExpressaoEqualidade   ExpressaoEqualidade1 
 //				| null 
 		if(currentTk.checkType(TokenType.OPRE)){
-			System.out.println("Expressao1 = '&' ExpressaoEqualidade   ExpressaoEqualidade1");
+			escreveln("Expressao1 = '&'"+" ("+currentTk.getValue()+")"+" ExpressaoEqualidade   ExpressaoEqualidade1");
 			getToken();
 			expressaoEqualidade();
 			expressaoEqualidade1();
@@ -1128,7 +1129,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoEqualidade(){
 //		ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1
-		System.out.println("ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1");
+		escreveln("ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1");
 		expressaoRelacional();
 		expressaoEqualidade1();
 	}
@@ -1138,7 +1139,7 @@ public class SyntaticAnalyzer {
 //			    | '!=' ExpressaoEqualidade   ExpressaoEqualidade1 
 //			    | null 
 		if(currentTk.checkType(TokenType.OPRIGL)||currentTk.checkType(TokenType.OPRDIF)){
-			System.out.println("ExpressaoEqualidade1 ="+currentTk.getValue()+" ExpressaoEqualidade   ExpressaoEqualidade1");
+			escreveln("ExpressaoEqualidade1 ="+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoEqualidade   ExpressaoEqualidade1");
 			getToken();
 			expressaoEqualidade();
 			expressaoEqualidade1();
@@ -1149,7 +1150,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoRelacional(){
 //		ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1
-		System.out.println("ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1");
+		escreveln("ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1");
 		expressaoAditiva();
 		expressaoRelacional1();
 	}
@@ -1162,19 +1163,19 @@ public class SyntaticAnalyzer {
 //				| ExpressaoInstance	
 //				| null
 		if(currentTk.checkType(TokenType.OPRMNR)){
-			System.out.println("ExpressaoRelacional1 = ExpressaoMenor");
+			escreveln("ExpressaoRelacional1 = ExpressaoMenor");
 			expressaoMenor();
 		}else if(currentTk.checkType(TokenType.OPRMAR)){
-			System.out.println("ExpressaoRelacional1 = ExpressaoMaior");
+			escreveln("ExpressaoRelacional1 = ExpressaoMaior");
 			expressaoMaior();
 		}else if(currentTk.checkType(TokenType.OPRMEI)){
-			System.out.println("ExpressaoRelacional1 = ExpressaoMenorOuIgual");
+			escreveln("ExpressaoRelacional1 = ExpressaoMenorOuIgual");
 			expressaoMenorOuIgual();
 		}else if(currentTk.checkType(TokenType.OPRMAI)){
-			System.out.println("ExpressaoRelacional1 = ExpressaoMaiorOuIgual");
+			escreveln("ExpressaoRelacional1 = ExpressaoMaiorOuIgual");
 			expressaoMaiorOuIgual();
 		}else if(currentTk.checkType(TokenType.KEYIOF)){
-			System.out.println("ExpressaoRelacional1 = ExpressaoInstance");
+			escreveln("ExpressaoRelacional1 = ExpressaoInstance");
 			expressaoInstance();
 		}else{
 			
@@ -1184,7 +1185,7 @@ public class SyntaticAnalyzer {
 	public static void expressaoMenor(){
 //		ExpressaoMenor = '<' ExpressaoAditiva
 		if(currentTk.checkType(TokenType.OPRMNR)){
-			System.out.println("ExpressaoMenor = '<' ExpressaoAditiva");
+			escreveln("ExpressaoMenor = '<'"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1195,7 +1196,7 @@ public class SyntaticAnalyzer {
 	public static void expressaoMaior(){
 //		ExpressaoMaior = '<' ExpressaoAditiva
 		if(currentTk.checkType(TokenType.OPRMAR)){
-			System.out.println("ExpressaoMaior = '<' ExpressaoAditiva");
+			escreveln("ExpressaoMaior = '<'"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1206,7 +1207,7 @@ public class SyntaticAnalyzer {
 	public static void expressaoMenorOuIgual(){
 //		ExpressaoMenorOuIgual = '<=' ExpressaoAditiva
 		if(currentTk.checkType(TokenType.OPRMEI)){
-			System.out.println("ExpressaoMenorOuIgual =  '<=' ExpressaoAditiva");
+			escreveln("ExpressaoMenorOuIgual =  '<='"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1215,9 +1216,9 @@ public class SyntaticAnalyzer {
 	}
 	
 	public static void expressaoMaiorOuIgual(){
-//		ExpressaoMaiorOuIgual = '<=' ExpressaoAditiva
+//		ExpressaoMaiorOuIgual = '>=' ExpressaoAditiva
 		if(currentTk.checkType(TokenType.OPRMAI)){
-			System.out.println("ExpressaoMaiorOuIgual =  '<=' ExpressaoAditiva");
+			escreveln("ExpressaoMaiorOuIgual =  '>='"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1228,9 +1229,10 @@ public class SyntaticAnalyzer {
 	public static void expressaoInstance(){
 //		ExpressaoInstance = 'instanceof' 'id'
 		if(currentTk.checkType(TokenType.KEYIOF)){
-			System.out.println("ExpressaoInstance = 'instanceof' 'id'");
+			escreve("ExpressaoInstance = 'instanceof'"+" ("+currentTk.getValue()+")");
 			getToken();
 			if(currentTk.checkType(TokenType.ID)){	
+				escreveln(" 'id'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -1242,7 +1244,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoAditiva(){
 //		ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1
-		System.out.println("ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1");
+		escreveln("ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1");
 		expressaoMultiplicativa();
 		expressaoAditiva1();
 	}
@@ -1252,7 +1254,7 @@ public class SyntaticAnalyzer {
 //		        |  '-' ExpressaoMultiplicacao   ExpressaoAditiva1 
 //		        | null
 		if(currentTk.checkType(TokenType.OPRADC)||currentTk.checkType(TokenType.OPRMEN)){
-			System.out.println("ExpressaoAditiva1 = "+currentTk.getValue()+" ExpressaoMultiplicacao   ExpressaoAditiva1");
+			escreveln("ExpressaoAditiva1 = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoMultiplicacao   ExpressaoAditiva1");
 			expressaoMultiplicativa();
 			expressaoAditiva1();
 		}
@@ -1260,7 +1262,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoMultiplicativa(){
 //		ExpressaoMultiplicativa = ExpressaoUnaria   ExpressaoMultiplicativa1
-		System.out.println("ExpressaoMultiplicacao = ExpressaoUnaria   ExpressaoMultiplicacao1");
+		escreveln("ExpressaoMultiplicacao = ExpressaoUnaria   ExpressaoMultiplicacao1");
 		expressaoUnaria();
 		expressaoMultiplicativa1();
 	}
@@ -1271,13 +1273,13 @@ public class SyntaticAnalyzer {
 //				| ExpressaoModulo
 //				| null	
 		if(currentTk.checkType(TokenType.OPRMTL)){
-			System.out.println("ExpressaoMultiplicacao1 = ExpressaoMultiplicacao ");
+			escreveln("ExpressaoMultiplicacao1 = ExpressaoMultiplicacao ");
 			expressaoMultiplicacao();
 		}else if(currentTk.checkType(TokenType.OPRDIV)){
-			System.out.println("ExpressaoMultiplicacao1 = ExpressaoDivisao ");
+			escreveln("ExpressaoMultiplicacao1 = ExpressaoDivisao ");
 			expressaoDivisao();
 		}else if(currentTk.checkType(TokenType.OPRMOD)){
-			System.out.println("ExpressaoMultiplicacao1 = ExpressaoModulo ");
+			escreveln("ExpressaoMultiplicacao1 = ExpressaoModulo ");
 			expressaoModulo();
 		}else{
 			
@@ -1287,7 +1289,7 @@ public class SyntaticAnalyzer {
 	public static void expressaoMultiplicacao(){
 //		ExpressaoMultiplicacao = '*' ExpressaoUnaria   ExpressaoMultiplicativa
 		if(currentTk.checkType(TokenType.OPRMTL)){
-			System.out.println("ExpressaoMultiplicacao = '*' ExpressaoUnaria   ExpressaoMultiplicativa1");
+			escreveln("ExpressaoMultiplicacao = '*'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
 			getToken();
 			expressaoUnaria();
 			expressaoMultiplicativa1();
@@ -1299,7 +1301,7 @@ public class SyntaticAnalyzer {
 	public static void expressaoDivisao(){
 //		ExpressaoDivisao = '/' ExpressaoUnaria   ExpressaoMultiplicativa
 		if(currentTk.checkType(TokenType.OPRDIV)){
-			System.out.println("ExpressaoDivisao = '/' ExpressaoUnaria   ExpressaoMultiplicativa1");
+			escreveln("ExpressaoDivisao = '/'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
 			getToken();
 			expressaoUnaria();
 			expressaoMultiplicativa1();
@@ -1311,7 +1313,7 @@ public class SyntaticAnalyzer {
 	public static void expressaoModulo(){
 //		ExpressaoModulo = '%' ExpressaoUnaria   ExpressaoMultiplicativa
 		if(currentTk.checkType(TokenType.OPRMOD)){
-			System.out.println("ExpressaoModulo = '%' ExpressaoUnaria   ExpressaoMultiplicativa1");
+			escreveln("ExpressaoModulo = '%'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
 			getToken();
 			expressaoUnaria();
 			expressaoMultiplicativa1();
@@ -1322,7 +1324,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoIncrementoPre(){
 //		ExpressaoIncrementoPre =  '++' ExpressaoUnaria
-		System.out.println("ExpressaoIncrementoPre =  '++' ExpressaoUnaria");
+		escreveln("ExpressaoIncrementoPre =  '++'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
 		if(currentTk.checkType(TokenType.OPRMMA)){
 			getToken();
 			expressaoUnaria();
@@ -1331,7 +1333,7 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoDecrementoPre(){
 //		ExpressaoDecrementoPre = '--' ExpressaoUnaria
-		System.out.println("ExpressaoDecrementoPre = '--' ExpressaoUnaria");
+		escreveln("ExpressaoDecrementoPre = '--'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
 		if(currentTk.checkType(TokenType.OPRMME)){
 			getToken();
 			expressaoUnaria();
@@ -1346,26 +1348,26 @@ public class SyntaticAnalyzer {
 //				| ExpressaoPosFixada
 		
 		if(currentTk.checkType(TokenType.OPRADC)||currentTk.checkType(TokenType.OPRMEN)){
-			System.out.println("ExpressaoUnaria = "+currentTk.getValue()+"ExpressaoUnaria");
+			escreveln("ExpressaoUnaria = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+"ExpressaoUnaria");
 			getToken();
 			expressaoUnaria();
 		}else if(currentTk.checkType(TokenType.OPRMME)){
-			System.out.println("ExpressaoUnaria = ExpressaoDecrementoPre");
+			escreveln("ExpressaoUnaria = ExpressaoDecrementoPre");
 			expressaoDecrementoPre();
 		}else if(currentTk.checkType(TokenType.OPRMMA)){
-			System.out.println("ExpressaoUnaria = ExpressaoIncrementoPre");
+			escreveln("ExpressaoUnaria = ExpressaoIncrementoPre");
 			expressaoIncrementoPre();
 		}else{
-			System.out.println("ExpressaoUnaria = ExpressaoPosFixada");
+			escreveln("ExpressaoUnaria = ExpressaoPosFixada");
 			expressaoPosFixada();
 		}	
 	}
 	
 	public static void expressaoIncrementoPos(){
 //		ExpressaoIncrementoPos = ExpressaoPosFixada '++'
-		System.out.println("ExpressaoIncrementoPos = ExpressaoPosFixada '++'");
 		expressaoPosFixada();
 		if(currentTk.checkType(TokenType.OPRMMA)){
+			escreveln("ExpressaoIncrementoPos = ExpressaoPosFixada '++'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 				System.out.println(currentTk.getValue());
@@ -1374,9 +1376,9 @@ public class SyntaticAnalyzer {
 	
 	public static void expressaoDecrementoPos(){
 //		ExpressaoDecrementoPos = ExpressaoPosFixada '--'
-		System.out.println("ExpressaoDecrementoPos = ExpressaoPosFixada '--'");
 		expressaoPosFixada();
 		if(currentTk.checkType(TokenType.OPRMME)){
+			escreveln("ExpressaoDecrementoPos = ExpressaoPosFixada '--'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 				erro();
@@ -1387,11 +1389,11 @@ public class SyntaticAnalyzer {
 //		ExpressaoPosFixada = Primario PosFixo
 //				| Nome PosFixo
 		if(currentTk.checkType(TokenType.ID)){
-			System.out.println("ExpressaoPosFixada = Nome PosFixo");
+			escreveln("ExpressaoPosFixada = Nome PosFixo");
 			nome();
 			posFixo();
 		}else{
-			System.out.println("ExpressaoPosFixada = Primario PosFixo");
+			escreveln("ExpressaoPosFixada = Primario PosFixo");
 			primario();
 			posFixo();
 		}
@@ -1402,7 +1404,7 @@ public class SyntaticAnalyzer {
 //				| '--'
 //				| null
 		if(currentTk.checkType(TokenType.OPRMMA)||currentTk.checkType(TokenType.OPRMME)){
-			System.out.println("PoxFixo = "+currentTk.getValue());
+			escreveln("PoxFixo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			
