@@ -10,11 +10,13 @@ import LexAna.Token;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
-		FileWriter arq = new FileWriter("C:/Users/Felipe/workspace/SyntAna/src/saida.txt");
+		FileWriter arq = new FileWriter("/home/laccan/workspace/SyntAna/src/saida.txt");
+//		FileWriter arq = new FileWriter("C:/Users/Felipe/workspace/SyntAna/src/saida.txt");
 	    PrintWriter gravarArq = new PrintWriter(arq);
 		
 		LexicalAnalyzer la = new LexicalAnalyzer();
-		la.read("C:/Users/Felipe/workspace/SyntAna/src/alo.txt");
+		la.read("/home/laccan/workspace/SyntAna/src/alo.txt");
+//		la.read("C:/Users/Felipe/workspace/SyntAna/src/alo.txt");
 		
 //		la.printFile();
 		

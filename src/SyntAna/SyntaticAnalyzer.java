@@ -216,7 +216,6 @@ public class SyntaticAnalyzer {
 	
 	public static void corpoClasse(){
 //		CorpoClasse = '{' DeclaracoesCorpoClasse '}'
-		System.out.println("CorpoClasse = '{' DeclaracoesCorpoClasse '}'");
 		if(currentTk.checkType(TokenType.SEPACH)){
 			escreve("CorpoClasse = '{'"+" ("+currentTk.getValue()+")"+"DeclaracoesCorpoClasse");
 			getToken();

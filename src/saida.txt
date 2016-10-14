@@ -1,1 +1,40 @@
+UnidadeDeCompilacao = DeclaracaoDeClasse
+DeclaracaoDeClasse = Modificador 'id' (class) 'class' (alo) CorpoClasse
+CorpoClasse = '{' ({)DeclaracoesCorpoClasseDeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1
+DeclaracaoMembroClasse = 'method'  (method) DeclaracaoDeMetodo
+DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo
+CabecalhoMetodo = Modificador Tipo MetodoDeclaracao
+Tipo = KEYMAIN (main)
+MetodoDeclaracao = 'id' (main)'[' ([) ListaDeParametrosFormais ']' (])
+CorpoMetodo = Bloco 
+Bloco = '{' ({) DeclaracaoDeBlocoDeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1
+BlocoDeclaracao = Declaracao
+Declaracao = DeclaracaoSemSubDeclaracaoDireta
+DeclaracaoSemSubDeclaracaoDireta = ExpressaoDeclaracao
+ExpressaoDeclaracao = ChamadaMetodo
+ChamadaMetodo = 'call' (call)NomeMetodo = KEYPRT (print)
+ NomeMetodo '[' ([)ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1
+ExpressaoAtribuicao = ExpressaoCondicional
+ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1
+ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1
+ExpressaoECondicional = Expressao   ExpressaoECondicional1
+Expressao = ExpressaoEqualidade   Expressao1
+ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1
+ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1
+ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1
+ExpressaoMultiplicacao = ExpressaoUnaria   ExpressaoMultiplicacao1
+ExpressaoUnaria = ExpressaoPosFixada
+ExpressaoPosFixada = Primario PosFixo
+Primario = PrimairoSemNovoArray 
+PrimairoSemNovoArray = Literal
+Constante
+Constante = CNTSTR ("alo mundo")
+ ListaDeArgumentos ']' (])
+DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1
+DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1
+BlocoDeclaracao = Declaracao
+Declaracao = DeclaracaoSemSubDeclaracaoDireta
+DeclaracaoSemSubDeclaracaoDireta = ';' (;)
+ '}' (})
+'}' (})
 ---------ALO---------
