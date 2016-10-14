@@ -14,7 +14,7 @@ public class Main {
 	    PrintWriter gravarArq = new PrintWriter(arq);
 		
 		LexicalAnalyzer la = new LexicalAnalyzer();
-		la.read("C:/Users/Felipe/workspace/SyntAna/src/alo.txt");
+		la.read("C:/Users/Felipe/workspace/SyntAna/src/shell.txt");
 		
 //		la.printFile();
 		

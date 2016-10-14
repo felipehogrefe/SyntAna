@@ -1,176 +1,263 @@
-*LITERAL = CNT | CTN
-*CNT = 'cntLgc' 
+*Literal = Constante 
+		| ConstanteNumerica
+		
+*Constante = 'cntLgc' 
 		| 'cntChr' 
 		| 'cntStr'
-*CTN = 	'ctnInt' 
+
+*ConstanteNumerica = 'ctnInt' 
 		| 'ctnDbl' 
-*TIPO =  NOME
-		| TIPOPRIMITIVO
+
+*Tipo = TipoPrimitivo 
+		| Nome
 		| 'void'
-*TIPOPRIMITIVO =  'tkLgc' 
+
+*TipoPrimitivo = TipoNumerico 
+		| 'tkLgc'
 		| 'tkChr' 
-		| 'tkStr'
-		| TIPOPRIMITIVONUM
-*TIPOPRIMITIVONUM = 'tkInt'  
-		| 'tkDbl' 
-*NOME = 'id' NOMECOMP
-*NOMECOMP = '.' NOME
-		| null
-*MODIFICADOR  = 'static' 
-		| null
+		| 'tkStr' 
 
-Produções referentes a DECCLASSE
+*TipoNumerico =  'tkInt' 
+		| 'tkDbl'
+		
+*ArrayCol =  '[' ']' ArrayCol
+		| null		
 
-UNIDADECOMP = DECCLASSE
-*DECCLASSE = MODIFICADOR 'class' 'id' CORPOCLASSE
-*CORPOCLASSE = '{' DECSCORPOCLASSE '}'
-*DECSCORPOCLASSE = DECMEMBROCLASSE DECC1
-*DECC1 = DECMEMBROCLASSE DECC1 
-		| null
-*DECMEMBROCLASSE =  DECCAMPO 
-		| 'method' DECMETODO
+*Nome = NomeSimples Composicao
 
-Produções referentes a DECCAMPO
+*Composicao = '.' 'id' Composicao
+		|null
 
+*NomeSimples = 'id'
 
-*DECCAMPO = MODIFICADOR TIPO DECSVARIAVEL ';'
-*DECSVARIAVEL = DECVARIAVEL DECV1
-*DECV1 = ','  DECVARIAVEL DECV1 
-		| null
-*DECVARIAVEL = DECVARIAVELID DECVARIAVELF
-*DECVARIAVELF = '=' EXPRESSAO 
-		| null
-*DECVARIAVELID = 'id' COLARRAY
-*COLARRAY = '[' ']'
+*Modificador  = 'static' 
 		| null
 
+*UnidadeDeCompilacao = DeclaracaoDeClasse
 
-Produções referente a DECMETODO
+DeclaracaoDeClasse = Modificador 'class' 'id' CorpoClasse
 
-*DECMETODO = '_' CABMETODO CORPOMETODO
-*CABMETODO = MODIFICADOR TIPO DECPARAMFOR
-*DECPARAMFOR = 'id' '[' LISTPARAMFORMAL ']'
-*LISTPARAMFORMAL = PARAMFORMAIS LISTPARAMFORMAL1
+CorpoClasse = '{' DeclaracoesCorpoClasse '}'
+
+DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1
+
+DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1 
 		| null
-*LISTPARAMFORMAL1 = ',' PARAMFORMAIS LISTPARAMFORMAL
+		
+DeclaracaoMembroClasse = DeclaracaoDeCampo 
+		| 'method' DeclaracaoDeMetodo
+
+DeclaracaoDeCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'
+
+DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1
+
+DeclaracoesVariavel1 = ','  DeclaracaoVariavel DeclaracoesVariavel1 
 		| null
-*PARAMFORMAIS = TIPO DECVARIAVELID 
-*CORPOMETODO = BLOCO | ';'
+		
+DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1
 
----------
-
----------
-decconstru
-
-*DECCONSTRU = NOMESIMPLES '[' LISTPARAMFORMAL ']'
-
-Produções referentes a BLOCO e DECLARACAO
-
-*BLOCO = '{' DECBLOCO '}'
-*DECBLOCO = BLOCODEC DECB1
-*DECB1 = DECBLOCO DECB1 
+DeclaracaoVariavel1 = ExpressaoAtribuicao 
 		| null
-*BLOCODEC = DECCAMPO 
-		| DECLARACAO
-*DECLARACAO = DECSEMSUBDECDIR 
-		| IFDEC 
-        | DECWHILE 
-        | DECFOR
-*DECSEMSUBDECDIR = BLOCO 
+		
+DeclaracaoVariavelId = 'id' ArrayCol
+
+DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo
+
+CabecalhoMetodo = Modificador Tipo MetodoDeclaracao
+		
+MetodoDeclaracao = 'id' '[' ListaDeParametrosFormais ']'
+
+ListaDeParametrosFormais = ParametrosFormais ListaDeParametrosFormais1
+		|null
+
+ListaDeParametrosFormais1 = ',' ParametrosFormais ListaDeParametrosFormais
+		|null
+
+ParametrosFormais = Tipo DeclaracaoVariavelId 
+
+CorpoMetodo = Bloco 
+		| ';'
+
+Bloco = '{' DeclaracaoDeBloco '}'
+
+DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1
+
+DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1 
+		| null 
+
+BlocoDeclaracao = DeclaracaoCampo 
+		| Declaracao
+		
+DeclaracaoCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'
+
+Declaracao = DeclaracaoSemSubDeclaracaoDireta 
+		| DeclaracaoIf 
+        | DeclaracaoFor 
+        | DeclaracaoWhile 
+
+DeclaracaoSemSubDeclaracaoDireta = Bloco 
 		| ';' 
-		| EXPRESSAODEC 
-        | DECRETURN 
-        | DECBREAK
-*EXPRESSAODEC = EXPRINCRPRE 
-		| EXPRDECREPRE 
-        | EXPRCRIAINSTANCLASSE
-        | NOME '[' LISTAARG ']' ATR
-*ATR = '=' EXPRATR
-*IFDEC = 'if' '[' EXPRATR ']' DECLARACAO ELSEDEC
-*ELSEDEC = 'else' DECLARACAO
-		| null
-*DECWHILE = 'while' '[' EXPRATR ']' DECLARACAO
-*DECFOR = 'for' '[' FORINIT ';' LIMITESUP ';' PASSO ']' DECLARACAO
-*FORINIT = TIPOPRIMITIVONUM NOME '=' EXPRATR
-*LIMITESUP = CTN 
-		| NOME
-*PASSO = CTN 
-		| NOME
-*LISTADECEXPR = EXPRESSAODEC LISTADECEXPR1
-*LISTADECEXPR1 = ';' LISTADECEXPR LISTADECEXPR1
-		| null
-*DECRETURN = 'return' EXPRATR ';' 
-*DECBREAK = 'break' ';'
+		| ExpressaoDeclaracao 
+        | DeclaracaoReturn 
+        | DeclaracaoBreak
+        
+ExpressaoDeclaracao = Atribuicao 
+		| ExpressaoIncrementoPre 
+        | ExpressaoDecrementoPre 
+        | ChamadaMetodo
+        | ExpressaoCriaInstanciaDeClasse 
+		
+DeclaracaoIf = 'if' '[' ExpressaoCondicional']'  Declaracao   DeclaracaoElse
 
-Produções referente a EXPRESSAO
+DeclaracaoElse = 'else' Declaracao
+		| null
 
-*EXPRCRIAINSTANCLASSE = 'new' NOME '[' LISTAARG ']'
-*LISTAARG = EXPRATR LISTA1
-*LISTA1 = ',' LISTAARG LISTA1
+DeclaracaoWhile = 'while' '[' ExpressaoCondicional ']' Declaracao
+
+DeclaracaoFor = 'for' '[' InicializadorFor ';' LimiteSuperiorFor ';' PassoFor ']' Declaracao
+
+InicializadorFor = 'int' 'id' '=' ValorInicializadorFor
+
+ValorInicializadorFor = Literal
+		| 'id'
+
+LimiteSuperiorFor = ConstanteNumerica 
+		| Nome
+
+PassoFor = ConstanteNumerica 
+		| Nome
+
+DeclaracaoReturn = 'return' ExpressaoAtribuicao ';' 
+		| 'return' ';'
+
+DeclaracaoBreak = 'break' ExpressaoAtribuicao ';' 
+		| 'break' ';'
+
+ExpressaoCriaInstanciaDeClasse = 'new' 'id' '[' ListaDeArgumentos ']'
+
+ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1
+		| null
+		
+ListaDeArgumentos1 = ',' ListaDeArgumentos   ListaDeArgumentos1 
 		| null 
-*EXPRCRIAARRAY= 'array' '[' TIPO ',' CTN ']'
-CHAMADAMETODO = NOME '[' LISTAARG ']'
-*ATRIBUICAO = NOME NOME1 '=' EXPRATR 
-*NOME1 = '[' EXPRATR ']'
+
+ExpressaoCriaArray = 'array' '[' Tipo ',' TamanhoArray ']'
+
+TamanhoArray = 'id'
+		| 'cntInt'
+
+ChamadaMetodo = 'call' NomeMetodo '[' ListaDeArgumentos ']'
+
+NomeMetodo = Nome NomeMetodo1
+		| 'print'
+		| 'read'
+
+NomeMetodo1 = '.' NomeMetodo
 		| null
-*EXPRATR = EXPRCOND 
-		| ATRIBUICAO
-*EXPRCOND = EXPRORCOND EXPRCOND1
-*EXPRCOND1 = '?' EXPRATR ':' EXPRCOND 
+
+
+AcessoArray = 'aarray' Nome '[' ExpressaoAtribuicao ']'
+
+Primario = PrimairoSemNovoArray 
+		| ExpressaoCriaArray
+		
+PrimairoSemNovoArray = Literal
+    	| 'this' 
+        | '[' ExpressaoAtribuicao ']'
+        | ExpressaoCriaInstanciaDeClasse
+    	| ChamadaMetodo 
+		| AcessoArray
+
+Argumentos = '[' ExpressaoAtribuicao ']'
 		| null
-*EXPRORCOND = EXPRECOND EXPROR1
-*EXPROR1 = '||' EXPRECOND EXPROR1 
+		
+Atribuicao = Nome1 'id' Argumentos '=' ExpressaoAtribuicao 
+
+Nome1 = 'id' Nome1
+		| null
+
+ExpressaoAtribuicao = ExpressaoCondicional 
+
+ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1
+
+ExpressaoCondicional1 = '?' Expressao ':' ExpressaoCondicional
+		| null
+
+ExpressaoOuCondicional = ExpressaoCondicional   ExpressaoOuCondicional1
+
+ExpressaoOuCondicional1 = '||' ExpressaoCondicional   ExpressaoOuCondicional1 
 		| null 
-*EXPRECOND = EXPRIOR EXPREC1 
-*EXPREC1 = '&&' EXPRIOR EXPREC1 
-		| null
-*EXPRIOR = EXPREOR EXPRI1
-*EXPRI1 = '|' EXPRIOR EXPRI1 
-		| null
-*EXPREOR = EXPRE EXPREOR1
-*EXPREOR1 = '^' EXPREOR EXPREOR1 
-		| null
-*EXPRE = EXPREQUA EXPRE1
-*EXPRE1 = '&' EXPREQUA EXPRE1 
-		| null
-*EXPREQUA = EXPRREL EXPREQ1
-*EXPREQ1 = '==' EXPREQUA EXPREQ1 
-	    | '!=' EXPREQUA EXPREQ1 
-		| null
-*EXPRREL = EXPRADD EXPRREL1
-*EXPRREL1 =  '<' EXPRADD EXPRREL1 
-		| '>' EXPRADD EXPRREL1 
-		| '<=' EXPRADD EXPRREL1  
-		| '>=' EXPRADD EXPRREL1 
-		| 'instanceof' 'id' EXPRREL1
-		| null
-*EXPRADD = EXPRMULT EXPRADD1
-*EXPRADD1 = '+' EXPRMULT EXPRADD1
-        |  '-' EXPRMULT EXPRADD1 
+
+ExpressaoECondicional = Expressao   ExpressaoECondicional1 
+
+ExpressaoECondicional1 = '&&' Expressao   ExpressaoECondicional1
+		| null 
+		
+Expressao = ExpressaoEqualidade   Expressao1
+
+Expressao1 = '&' ExpressaoEqualidade   ExpressaoEqualidade1 
+		| null 
+		
+ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1
+
+ExpressaoEqualidade1 = '==' ExpressaoEqualidade   ExpressaoEqualidade1  
+	    | '!=' ExpressaoEqualidade   ExpressaoEqualidade1 
+	    | null 
+	    
+ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1
+
+ExpressaoRelacional1 =  ExpressaoMenor 
+		| ExpressaoMaior 
+		| ExpressaoMenorOuIgual 
+		| ExpressaoMaiorOuIgual 
+		| ExpressaoInstance
+		
+ExpressaoMenor = '<' ExpressaoAditiva
+		
+ExpressaoMaior = '>' ExpressaoAditiva
+		
+ExpressaoMenorOuIgual =  '<=' ExpressaoAditiva
+		
+ExpressaoMaiorOuIgual = '>=' ExpressaoAditiva
+		
+ExpressaoInstance = 'instanceof' 'id'
+
+ExpressaoAditiva = ExpressaoMultiplicativa   ExpressaoAditiva1
+
+ExpressaoAditiva1 = '+' ExpressaoMultiplicativa   ExpressaoAditiva1
+        |  '-' ExpressaoMultiplicativa   ExpressaoAditiva1 
         | null
-*EXPRMULT = EXPRUNARIA EXPRMULT1
-*EXPRMULT1 = '*' EXPRUNARIA EXPRMULT1 
-		| '/' EXPRUNARIA EXPRMULT1 
-		| '%' EXPRUNARIA EXPRMULT1
-        | null
-*EXPUNNMM = EXPRPOSF 
-		| '~' EXPRUNARIA 
-		| '!' EXPRUNARIA
-*EXPRDECREPRE = '--' EXPRUNARIA
-*EXPRINCRPRE =  '++' EXPRUNARIA
-*EXPRUNARIA = '+' EXPRUNARIA
-        | '-' EXPRUNARIA 
-        | EXPRPOSF 
-        | EXPRINCRPRE
-        | EXPRDECREPRE 
-        | EXPUNNMM
-*EXPRDECREPOS = EXPRPOSF '--'
-*EXPRINCRPOS = EXPRPOSF '++'
-*EXPRPOSF = 'this' 
-        | '[' EXPRATR ']'
-        | LITERAL
-        | EXPRCRIAINSTANCLASSE
-		| EXPRCRIAARRAY
-		| NOME CHAMADA
-*CHAMADA =  '[' LISTAARG ']'
+        
+ExpressaoMultiplicativa = ExpressaoUnaria   ExpressaoMultiplicacao1
+
+ExpressaoMultiplicativa1 = ExpressaoMultiplicacao 
+		| ExpressaoDivisao 
+		| ExpressaoModulo
+		| null
+		
+ExpressaoMultiplicacao = '*' ExpressaoUnaria   ExpressaoMultiplicativa1
+
+ExpressaoDivisao = '/' ExpressaoUnaria   ExpressaoMultiplicativa1
+
+ExpressaoModulo = '%' ExpressaoUnaria   ExpressaoMultiplicativa1
+
+ExpressaoDecrementoPre = '--' ExpressaoUnaria
+
+ExpressaoIncrementoPre =  '++' ExpressaoUnaria
+
+ExpressaoUnaria = ExpressaoIncrementoPre
+		| ExpressaoDecrementoPre 
+		| '+' ExpressaoUnaria
+		| '-' ExpressaoUnaria 
+		| ExpressaoPosFixada
+
+ExpressaoDecrementoPos = ExpressaoPosFixada '--'
+
+ExpressaoIncrementoPos = ExpressaoPosFixada '++'
+
+ExpressaoPosFixada = Primario PosFixo
+		| Nome PosFixo
+		
+PoxFixo = '++'
+		| '--'
 		| null

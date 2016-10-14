@@ -170,4 +170,12 @@ public class Token{
 	public String getValue() {
 		return val;
 	}
+
+	public int getLine() {
+		return this.line;
+	}
+	
+	public int getCol() {
+		return this.col;
+	}
 }

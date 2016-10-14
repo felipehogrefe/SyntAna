@@ -41,8 +41,6 @@ public class LexicalAnalyzer {
 	}
 	public Token nextToken(){
 		
-		this.printFile();
-		
 		char cChar;
 		String tValue = "";
 		
@@ -189,7 +187,6 @@ public class LexicalAnalyzer {
 	}
 
 	public boolean isOver() {
-		System.out.println(cLine +" "+ cColumn +" "+ tStartL+" "+ tStartC);
 		if(!lines.isEmpty()){
 			if(cLine<lines.size()){
 				setLine(lines.get(cLine));

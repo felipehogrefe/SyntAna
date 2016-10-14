@@ -16,7 +16,7 @@ public enum TokenType {
 	CNTSTR(12),
 	COM(13), 
 	KEYCLS(14),
-	KEYMAN(15),
+	KEYAAY(15),
 	KEYSTA(16),
 	KEYPRT(17),
 	KEYREA(18),
@@ -75,7 +75,9 @@ public enum TokenType {
 	SEPDPT(71),
 	KEYBRK(72),
 	KEYVOD(73),
-	KEYMTD(74);
+	KEYMTD(74),
+	KEYATR(75),
+	KEYCLL(76);
 	
 	private int value;
 	
