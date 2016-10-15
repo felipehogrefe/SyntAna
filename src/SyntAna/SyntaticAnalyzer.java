@@ -2,18 +2,19 @@ package SyntAna;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import LexAna.LexicalAnalyzer;
 import LexAna.Token;
 import LexAna.TokenType;
 
 public class SyntaticAnalyzer {
-	static LexicalAnalyzer la;
-	static Token currentTk;
-	private static PrintWriter gravarArq;
-	static ArrayList<String> producoes;
+	LexicalAnalyzer la;
+	Token currentTk;
+	private PrintWriter gravarArq;
+	ArrayList<String> producoes;
 	
-	private static void getToken(){
+	private void getToken(){
 		if(la.isOver()){
 			currentTk = la.nextToken();
 		}
@@ -25,65 +26,76 @@ public class SyntaticAnalyzer {
 		this.gravarArq = gravarArq;
 	}
 	
-	static void erro(){
+	void erro(){
 		System.out.println("ERRO - val: "+currentTk.getValue()+", categ: "+currentTk.getCategory()+", ["+currentTk.getLine()+","+currentTk.getCol()+"]");
 		System.exit(1);
 	}
 	
-	static void escreve(String str){
+	void escreve(String str){
 		gravarArq.print(str);
 	}
 	
-	static void escreveln(String str){
+	void escreveln(String str){
 		gravarArq.println(str);
+	}
+	
+	public String defStr(){
+		String s="";
+		s+= producoes.size();
+		producoes.add(s);
+		return s;
 	}
 		
 	public void start(){
 //		UnidadeDeCompilacao = DeclaracaoDeClasse
 		producoes = new ArrayList<>();
-		String s="";
-		producoes.add(s);
-		s=("UnidadeDeCompilacao = DeclaracaoDeClasse");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "UnidadeDeCompilacao = DeclaracaoDeClasse");
 		getToken();
 		declaracaoDeClasse();
+		for(String p : producoes){
+			System.out.println(p);
+			if(!p.matches("\\d+")){
+				escreveln(p);
+			}
+		}
 	}
 	
-	public static void literal(){
+	public void literal(){
 //		Literal = Constante 
 //				| ConstanteNumerica
-		String s="";
-		producoes.add(s);
-		
+		String s = defStr();		
 		if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTCHR)||currentTk.checkType(TokenType.CNTSTR)){
-			s="Literal = Constante";
+			producoes.set(producoes.indexOf(s), "Literal = Constante");
 			constante();
 		}else if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			s="Literal = ConstanteNumerica";
+			producoes.set(producoes.indexOf(s), "Literal = ConstanteNumerica");
 			constanteNumerica();
 		}else{
 			erro();
 		}
 	}
 	
-	public static void constante(){
+	public void constante(){
 //		Constante = 'cntLgc' 
 //				| 'cntChr' 
 //				| 'cntStr'	
+		String s = defStr();
 		if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTCHR)||currentTk.checkType(TokenType.CNTSTR)){
-			escreveln("Constante = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "Constante = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
 		}
 	}
 	
-	public static void constanteNumerica(){
+	public void constanteNumerica(){
 //		ConstanteNumerica = 'ctnInt' 
 //				| 'ctnDbl
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			s="ConstanteNumerica = "+currentTk.getCategory()+" ("+currentTk.getValue()+")";
+			producoes.set(producoes.indexOf(s), "ConstanteNumerica = "+currentTk.getCategory()
+					+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
@@ -91,73 +103,70 @@ public class SyntaticAnalyzer {
 	}
 	
 	
-	public static void tipo(){
+	public void tipo(){
 //		Tipo = TipoPrimitivo 
 //				| Nome
 //				| 'void'
 //				| 'array'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYARY)){
 			getToken();
-			s="Tipo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")";	
+			producoes.set(producoes.indexOf(s),"Tipo = "+currentTk.getCategory()
+					+" ("+currentTk.getValue()+")");	
 		}else if(currentTk.checkType(TokenType.KEYVOD)){
 			getToken();
-			s="Tipo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")";	
+			producoes.set(producoes.indexOf(s),"Tipo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");	
 		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||currentTk.checkType(TokenType.KEYSTR)||
 				currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)){
-			s="Tipo = TipoPrimitivo";	
+			producoes.set(producoes.indexOf(s),"Tipo = TipoPrimitivo");	
 			tipoPrimitivo();
 		}else if(currentTk.checkType(TokenType.ID)){
-			s="Tipo = Nome";	
+			producoes.set(producoes.indexOf(s),"Tipo = Nome");	
 			nome();
 		}else{
 			erro();	
 		}
 	}
 	
-	public static void tipoPrimitivo(){
+	public void tipoPrimitivo(){
 //		TipoPrimitivo = TipoNumerico 
 //				| 'tkLgc'
 //				| 'tkChr' 
 //				| 'tkStr' 	
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
-			s="TipoPrimitivo = TipoNumerico";	
+			producoes.set(producoes.indexOf(s), "TipoPrimitivo = TipoNumerico");	
 			tipoNumerico();
 		}else if(currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
 				currentTk.checkType(TokenType.KEYSTR)){
-			s="TipoPrimitivo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")";
+			producoes.set(producoes.indexOf(s), "TipoPrimitivo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
 		}
 	}
 	
-	public static void tipoNumerico(){
+	public void tipoNumerico(){
 //		TipoNumerico =  'tkInt' 
 //				| 'tkDbl'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYINT)){
-			s="TipoNumerico = "+currentTk.getCategory()+" ("+currentTk.getValue()+")";
+			producoes.set(producoes.indexOf(s), "TipoNumerico = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
 		}
 	}	
 	
-	public static void arrayCol(){
+	public void arrayCol(){
 //		ArrayCol =  '[' ']' ArrayCol
 //				| null	
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPACL)){
 			Token tk1 = currentTk;
 			getToken();
 			if(currentTk.checkType(TokenType.SEPACL)){
-				s="ArrayCol = '['" +" ("+tk1.getValue()+") ']'"+"("+currentTk.getValue()+")";	
+				producoes.set(producoes.indexOf(s), "ArrayCol = '['" +" ("+tk1.getValue()+") ']'"+"("+currentTk.getValue()+")");	
 				getToken();
 			}else{
 				erro();
@@ -167,25 +176,23 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void nome(){
+	public void nome(){
 //		Nome = NomeSimples Composicao
-		String s="";
-		producoes.add(s);
-		s="Nome = NomeSimples Composicao";	
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "Nome = NomeSimples Composicao");	
 		nomeSimples();
 		composicao();
 	}
 	
-	public static void composicao(){
+	public void composicao(){
 //		Composicao = '.' 'id' Composicao
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPPNT)){
 			Token tk1 = currentTk;
 			getToken();
 			if(currentTk.checkType(TokenType.ID)){
-				s="Composicao = '.' "+" ("+tk1.getValue()+") 'id' "+" ("+currentTk.getValue()+")"+" Composicao";
+				producoes.set(producoes.indexOf(s), "Composicao = '.' "+" ("+tk1.getValue()+") 'id' "+" ("+currentTk.getValue()+")"+" Composicao");
 				getToken();
 				composicao();
 			}else{
@@ -196,40 +203,37 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void nomeSimples(){
+	public void nomeSimples(){
 //		NomeSimples = 'id'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("NomeSimples = 'id' "+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "NomeSimples = 'id' "+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
 		}
 	}
 	
-	public static void modificador(){
+	public void modificador(){
 //		Modificador  = 'static' 
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYSTC)){
-			s=("Modificador = 'static'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "Modificador = 'static'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 		}
 	}
 	
-	public static void declaracaoDeClasse(){
+	public void declaracaoDeClasse(){
 //		DeclaracaoDeClasse = Modificador 'class' 'id' CorpoClasse
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		modificador();
 		if(currentTk.checkType(TokenType.KEYCLS)){
 			Token tk1 = currentTk;
 			getToken();
 			if(currentTk.checkType(TokenType.ID)){
-				s=("DeclaracaoDeClasse = Modificador 'class'"+" ("+tk1.getValue()+") 'id'"+" ("+currentTk.getValue()+")"+" CorpoClasse");
+				producoes.set(producoes.indexOf(s), "DeclaracaoDeClasse = Modificador 'class'"+" ("+tk1.getValue()+") 'id'"+" ("+currentTk.getValue()+")"+" CorpoClasse");
 				getToken();
 				corpoClasse();
 			}else{
@@ -240,16 +244,15 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void corpoClasse(){
+	public void corpoClasse(){
 //		CorpoClasse = '{' DeclaracoesCorpoClasse '}'
-		String s="";
-		producoes.add(s);		
+		String s = defStr();		
 		if(currentTk.checkType(TokenType.SEPACH)){
 			Token tk1 = currentTk;
 			getToken();
 			declaracoesCorpoClasse();
 			if(currentTk.checkType(TokenType.SEPFCH)){
-				s=("CorpoClasse = '{'"+" ("+tk1.getValue()+") "+"DeclaracoesCorpoClasse '}'"+" ("+currentTk.getValue()+")");
+				producoes.set(producoes.indexOf(s), "CorpoClasse = '{'"+" ("+tk1.getValue()+") "+"DeclaracoesCorpoClasse '}'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -259,22 +262,20 @@ public class SyntaticAnalyzer {
 		}	
 	}
 	
-	public static void declaracoesCorpoClasse(){
+	public void declaracoesCorpoClasse(){
 //		DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1
-		String s="";
-		producoes.add(s);
-		s=("DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "DeclaracoesCorpoClasse = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
 		declaracaoMembroClasse();
 		declaracaoCorpoClasse1();
 	}
 	
-	public static void declaracaoCorpoClasse1(){
+	public void declaracaoCorpoClasse1(){
 //		DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1 
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(!currentTk.checkType(TokenType.SEPFCH)){
-			s=("DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
+			producoes.set(producoes.indexOf(s), "DeclaracaoCorpoClasse1 = DeclaracaoMembroClasse DeclaracaoCorpoClasse1");
 			declaracaoMembroClasse();
 			declaracaoCorpoClasse1();
 		}else{
@@ -282,25 +283,23 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoMembroClasse(){
+	public void declaracaoMembroClasse(){
 //		DeclaracaoMembroClasse = DeclaracaoDeCampo 
 //				| 'method' DeclaracaoDeMetodo
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYMTD)){
-			s=("DeclaracaoMembroClasse = 'method'"+" ("+currentTk.getValue()+")"+" DeclaracaoDeMetodo");
+			producoes.set(producoes.indexOf(s), "DeclaracaoMembroClasse = 'method'"+" ("+currentTk.getValue()+")"+" DeclaracaoDeMetodo");
 			getToken();
 			declaracaoDeMetodo();
 		}else{
-			s=("DeclaracaoMembroClasse = DeclaracaoDeCampo");
+			producoes.set(producoes.indexOf(s), "DeclaracaoMembroClasse = DeclaracaoDeCampo");
 			declaracaoDeCampo();
 		}
 	}
 	
-	public static void declaracaoDeCampo(){
+	public void declaracaoDeCampo(){
 //		DeclaracaoDeCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYATR)){
 			Token tk1 = currentTk;
 			getToken();
@@ -308,7 +307,7 @@ public class SyntaticAnalyzer {
 			tipo();
 			declaracoesVariavel();
 			if(currentTk.checkType(TokenType.SEPPEV)){
-				s=("DeclaracaoDeCampo = 'atr' "+" ("+tk1.getValue()+")"+" Modificador Tipo DeclaracoesVariavel ';'"+" ("+currentTk.getValue()+")");
+				producoes.set(producoes.indexOf(s), "DeclaracaoDeCampo = 'atr' "+" ("+tk1.getValue()+")"+" Modificador Tipo DeclaracoesVariavel ';'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				erro();
@@ -316,22 +315,20 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracoesVariavel(){
+	public void declaracoesVariavel(){
 //		DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1
-		String s="";
-		producoes.add(s);
-		s=("DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "DeclaracoesVariavel = DeclaracaoVariavel DeclaracoesVariavel1");
 		declaracaoVariavel();
 		declaracoesVariavel1();
 	}
 	
-	public static void declaracoesVariavel1(){
+	public void declaracoesVariavel1(){
 //		DeclaracoesVariavel1 = ','  DeclaracaoVariavel DeclaracoesVariavel1 
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPVRG)){
-			s=("DeclaracoesVariavel1 = ',' "+" ("+currentTk.getValue()+")"+" DeclaracaoVariavel DeclaracoesVariavel1 ");
+			producoes.set(producoes.indexOf(s), "DeclaracoesVariavel1 = ',' "+" ("+currentTk.getValue()+")"+" DeclaracaoVariavel DeclaracoesVariavel1 ");
 			getToken();
 			declaracaoVariavel();
 			declaracoesVariavel1();
@@ -339,34 +336,31 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoVariavel(){
-		String s="";
-		producoes.add(s);
+	public void declaracaoVariavel(){
+		String s = defStr();
 //		DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1
-		s=("DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1");
+		producoes.set(producoes.indexOf(s), "DeclaracaoVariavel = DeclaracaoVariavelId DeclaracaoVariavel1");
 		declaracaoVariavelId();
 		declaracaoVariavel1();
 	}
 	
-	public static void declaracaoVariavel1(){
+	public void declaracaoVariavel1(){
 //		DeclaracaoVariavel1 = Atribuicao 
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("DeclaracaoVariavel1 = Atribuicao");
+			producoes.set(producoes.indexOf(s), "DeclaracaoVariavel1 = Atribuicao");
 			expressaoAtribuicao();
 		}else{
 			
 		}
 	}
 	
-	public static void declaracaoVariavelId(){
+	public void declaracaoVariavelId(){
 //		DeclaracaoVariavelId = 'id' ArrayCol
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("DeclaracaoVariavelId = 'id'"+" ("+currentTk.getValue()+")"+" ArrayCol");
+			producoes.set(producoes.indexOf(s), "DeclaracaoVariavelId = 'id'"+" ("+currentTk.getValue()+")"+" ArrayCol");
 			getToken();
 			arrayCol();
 		}else{
@@ -374,29 +368,26 @@ public class SyntaticAnalyzer {
 		}
 	}
 		
-	public static void declaracaoDeMetodo(){
+	public void declaracaoDeMetodo(){
 //		DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo
-		String s="";
-		producoes.add(s);
-		s=("DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "DeclaracaoDeMetodo = CabecalhoMetodo CorpoMetodo");
 		cabecalhoMetodo();
 		corpoMetodo();
 	}
 	
-	public static void cabecalhoMetodo(){
+	public void cabecalhoMetodo(){
 //		CabecalhoMetodo = Modificador Tipo MetodoDeclaracao
-		String s="";
-		producoes.add(s);
-		s=("CabecalhoMetodo = Modificador Tipo MetodoDeclaracao");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "CabecalhoMetodo = Modificador Tipo MetodoDeclaracao");
 		modificador();
 		tipo();
 		metodoDeclaracao();		
 	}
 	
-	public static void metodoDeclaracao(){
+	public void metodoDeclaracao(){
 //		MetodoDeclaracao = 'id' '[' ListaDeParametrosFormais ']'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)||currentTk.checkType(TokenType.KEYMAIN)){
 			Token tk1 = currentTk;
 			getToken();
@@ -405,7 +396,7 @@ public class SyntaticAnalyzer {
 				getToken();
 				listaDeParametrosFormais();
 				if(currentTk.checkType(TokenType.SEPFCL)){
-					s=("MetodoDeclaracao = 'id'"+" ("+tk1.getValue()
+					producoes.set(producoes.indexOf(s), "MetodoDeclaracao = 'id'"+" ("+tk1.getValue()
 							+") '['"+" ("+tk2.getValue()+")"+" ListaDeParametrosFormais ']'"
 							+" ("+currentTk.getValue()+")");
 					getToken();
@@ -420,15 +411,14 @@ public class SyntaticAnalyzer {
 		}		
 	}
 	
-	public static void listaDeParametrosFormais(){
+	public void listaDeParametrosFormais(){
 //		ListaDeParametrosFormais = ParametrosFormais ListaDeParametrosFormais1
 //				|null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)||currentTk.checkType(TokenType.KEYLGC)||currentTk.checkType(TokenType.KEYCHR)||
 				currentTk.checkType(TokenType.KEYSTR)||currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)
 				||currentTk.checkType(TokenType.KEYVOD)||currentTk.checkType(TokenType.KEYARY)){
-			s=("ListaDeParametrosFormais = ParametrosFormais ListaDeParametrosFormais1");	
+			producoes.set(producoes.indexOf(s), "ListaDeParametrosFormais = ParametrosFormais ListaDeParametrosFormais1");	
 			parametrosFormais();
 			listaDeParametrosFormais1();
 		}else{
@@ -436,13 +426,12 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void listaDeParametrosFormais1(){
+	public void listaDeParametrosFormais1(){
 //		ListaDeParametrosFormais1 = ',' ParametrosFormais ListaDeParametrosFormais
 //				|null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPVRG)){
-			s=("ListaDeParametrosFormais1 = ','"+" ("+currentTk.getValue()+")"+" ParametrosFormais ListaDeParametrosFormais");	
+			producoes.set(producoes.indexOf(s), "ListaDeParametrosFormais1 = ','"+" ("+currentTk.getValue()+")"+" ParametrosFormais ListaDeParametrosFormais");	
 			getToken();
 			parametrosFormais();
 			listaDeParametrosFormais();
@@ -451,39 +440,36 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void parametrosFormais(){
+	public void parametrosFormais(){
 //		ParametrosFormais = Tipo DeclaracaoVariavelId 
-		String s="";
-		producoes.add(s);
-		s=("ParametrosFormais = Tipo DeclaracaoVariavelId");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ParametrosFormais = Tipo DeclaracaoVariavelId");
 		tipo();
 		declaracaoVariavelId();
 	}
 	
-	public static void corpoMetodo(){
+	public void corpoMetodo(){
 //		CorpoMetodo = Bloco 
 //				| ';'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPPEV)){
-			s=("CorpoMetodo = ';'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "CorpoMetodo = ';'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			s=("CorpoMetodo = Bloco ");
+			producoes.set(producoes.indexOf(s), "CorpoMetodo = Bloco ");
 			bloco();
 		}
 	}
 
-	public static void bloco(){
+	public void bloco(){
 //		Bloco = '{' DeclaracaoDeBloco '}'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPACH)){
 			Token tk1 = currentTk;
 			getToken();
 			declaracaoDeBloco();
 			if(currentTk.checkType(TokenType.SEPFCH)){
-				s=("Bloco = '{'"+" ("+tk1.getValue()+")"+" DeclaracaoDeBloco '}'"
+				producoes.set(producoes.indexOf(s), "Bloco = '{'"+" ("+tk1.getValue()+")"+" DeclaracaoDeBloco '}'"
 						+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
@@ -494,24 +480,22 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoDeBloco(){
+	public void declaracaoDeBloco(){
 //		DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1
-		String s="";
-		producoes.add(s);
-		s=("DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "DeclaracaoDeBloco = BlocoDeclaracao DeclaracaoDeBloco1");
 		blocoDeclaracao();
 		declaracaoDeBloco1();
 	}
 	
-	public static void declaracaoDeBloco1(){
+	public void declaracaoDeBloco1(){
 //		DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1 
 //				| null 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(!currentTk.checkType(TokenType.SEPFCH)){
 			/*se o currentTk for '}' significa que o bloco acabou, logo estamos no desvio null
 			 caso contrario, para qualquer outro token ainda estamos no bloco*/
-			s=("DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1");
+			producoes.set(producoes.indexOf(s), "DeclaracaoDeBloco1 = DeclaracaoDeBloco DeclaracaoDeBloco1");
 			declaracaoDeBloco();
 			declaracaoDeBloco1();
 		}else{
@@ -519,24 +503,22 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void blocoDeclaracao(){
+	public void blocoDeclaracao(){
 //		BlocoDeclaracao = DeclaracaoCampo 
 //				| Declaracao
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYATR)){
-			s=("BlocoDeclaracao = DeclaracaoCampo");
+			producoes.set(producoes.indexOf(s), "BlocoDeclaracao = DeclaracaoCampo");
 			declaracaoCampo();
 		}else{
-			s=("BlocoDeclaracao = Declaracao");
+			producoes.set(producoes.indexOf(s), "BlocoDeclaracao = Declaracao");
 			declaracao();
 		}
 	}
 	
-	public static void declaracaoCampo(){
+	public void declaracaoCampo(){
 //		DeclaracaoCampo = 'atr' Modificador Tipo DeclaracoesVariavel ';'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYATR)){
 			Token tk1 = currentTk;
 			getToken();
@@ -544,7 +526,7 @@ public class SyntaticAnalyzer {
 			tipo();
 			declaracoesVariavel();
 			if(currentTk.checkType(TokenType.SEPPEV)){
-				s=("DeclaracaoCampo = 'atr'"+" ("+tk1.getValue()+")"
+				producoes.set(producoes.indexOf(s), "DeclaracaoCampo = 'atr'"+" ("+tk1.getValue()+")"
 						+" Modificador Tipo DeclaracoesVariavel ';'"+" ("+currentTk.getValue()+")");
 				getToken();				
 			}else{
@@ -555,84 +537,80 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracao(){
+	public void declaracao(){
 //		Declaracao = DeclaracaoSemSubDeclaracaoDireta 
 //				| DeclaracaoIf 
 //		        | DeclaracaoFor 
 //		        | DeclaracaoWhile 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYIF)){
-			s=("Declaracao = DeclaracaoIf");
+			producoes.set(producoes.indexOf(s), "Declaracao = DeclaracaoIf");
 			declaracaoIf();
 		}else if(currentTk.checkType(TokenType.KEYWHL)){
-			s=("Declaracao = DeclaracaoWhile");
+			producoes.set(producoes.indexOf(s), "Declaracao = DeclaracaoWhile");
 			declaracaoWhile();
 		}else if(currentTk.checkType(TokenType.KEYFOR)){
-			s=("Declaracao = DeclaracaoFor");
+			producoes.set(producoes.indexOf(s), "Declaracao = DeclaracaoFor");
 			declaracaoFor();
 		}else{
-			s=("Declaracao = DeclaracaoSemSubDeclaracaoDireta");
+			producoes.set(producoes.indexOf(s), "Declaracao = DeclaracaoSemSubDeclaracaoDireta");
 			declaracaoSemSubDeclaracaoDireta();
 		}
 	}
 	
-	public static void declaracaoSemSubDeclaracaoDireta(){
+	public void declaracaoSemSubDeclaracaoDireta(){
 //		DeclaracaoSemSubDeclaracaoDireta = Bloco 
 //				| ';' 
 //				| ExpressaoDeclaracao 
 //		        | DeclaracaoReturn 
 //		        | DeclaracaoBreak
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPACH)){
-			s=("DeclaracaoSemSubDeclaracaoDireta = Bloco");
+			producoes.set(producoes.indexOf(s), "DeclaracaoSemSubDeclaracaoDireta = Bloco");
 			bloco();
 		}else if(currentTk.checkType(TokenType.SEPPEV)){
-			s=( "DeclaracaoSemSubDeclaracaoDireta = ';'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "DeclaracaoSemSubDeclaracaoDireta = ';'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else if(currentTk.checkType(TokenType.KEYRET)){
-			s=("DeclaracaoSemSubDeclaracaoDireta = DeclaracaoReturn");
+			producoes.set(producoes.indexOf(s), "DeclaracaoSemSubDeclaracaoDireta = DeclaracaoReturn");
 			declaracaoReturn();
 		}else if(currentTk.checkType(TokenType.KEYBRK)){
-			s=("DeclaracaoSemSubDeclaracaoDireta = DeclaracaoBreak");
+			producoes.set(producoes.indexOf(s), "DeclaracaoSemSubDeclaracaoDireta = DeclaracaoBreak");
 			declaracaoBreak();
 		}else{
-			s=("DeclaracaoSemSubDeclaracaoDireta = ExpressaoDeclaracao");
+			producoes.set(producoes.indexOf(s), "DeclaracaoSemSubDeclaracaoDireta = ExpressaoDeclaracao");
 			expressaoDeclaracao();
 		}
 	}
 	
-	public static void expressaoDeclaracao(){
+	public void expressaoDeclaracao(){
 //		ExpressaoDeclaracao = Atribuicao 
 //				| ExpressaoIncrementoPre 
 //		        | ExpressaoDecrementoPre 
 //		        | ChamadaMetodo
 //		        | ExpressaoCriaInstanciaDeClasse 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYCLL)){
-			s=("ExpressaoDeclaracao = ChamadaMetodo");
+			producoes.set(producoes.indexOf(s), "ExpressaoDeclaracao = ChamadaMetodo");
 			chamadaMetodo();
 		}else if(currentTk.checkType(TokenType.OPRMMA)){
-			s=("ExpressaoDeclaracao = ExpressaoIncrementoPre");
+			producoes.set(producoes.indexOf(s), "ExpressaoDeclaracao = ExpressaoIncrementoPre");
 			expressaoIncrementoPre();
 		}else if(currentTk.checkType(TokenType.OPRMME)){
-			s=("ExpressaoDeclaracao = ExpressaoDecrementoPre");
+			producoes.set(producoes.indexOf(s), "ExpressaoDeclaracao = ExpressaoDecrementoPre");
 			expressaoDecrementoPre();
 		}else if(currentTk.checkType(TokenType.KEYNEW)){
-			s=("ExpressaoDeclaracao = ExpressaoCriaInstanciaDeClasse");
+			producoes.set(producoes.indexOf(s), "ExpressaoDeclaracao = ExpressaoCriaInstanciaDeClasse");
 			expressaoCriaInstanciaDeClasse();
 		}else{
-			s=("ExpressaoDeclaracao = Atribuicao ");
+			producoes.set(producoes.indexOf(s), "ExpressaoDeclaracao = Atribuicao ");
 			atribuicao();
 		}
 	}	
 	
-	public static void declaracaoIf(){
+	public void declaracaoIf(){
 //		DeclaracaoIf = 'if' '[' ExpressaoCondicional ']'  Declaracao   DeclaracaoElse
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYIF)){
 			Token tk1 = currentTk;
 			getToken();
@@ -641,7 +619,7 @@ public class SyntaticAnalyzer {
 				getToken();
 				expressaoCondicional();
 				if(currentTk.checkType(TokenType.SEPFCL)){
-					s=("DeclaracaoIf = 'if'"+" ("+tk1.getValue()+") '['"
+					producoes.set(producoes.indexOf(s), "DeclaracaoIf = 'if'"+" ("+tk1.getValue()+") '['"
 							+" ("+tk2.getValue()+")"+" ExpressaoCondicional ']'"
 							+" ("+currentTk.getValue()+")"+"  Declaracao   DeclaracaoElse");
 					getToken();
@@ -658,13 +636,12 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoElse(){
+	public void declaracaoElse(){
 //		DeclaracaoElse = 'else' Declaracao
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYELS)){
-			s=("DeclaracaoElse = 'else'"+" ("+currentTk.getValue()+")"+" Declaracao");
+			producoes.set(producoes.indexOf(s), "DeclaracaoElse = 'else'"+" ("+currentTk.getValue()+")"+" Declaracao");
 			getToken();
 			declaracao();
 		}else{
@@ -672,10 +649,9 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoWhile(){
+	public void declaracaoWhile(){
 //		DeclaracaoWhile = 'while' '[' ExpressaoCondicional ']' Declaracao
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYWHL)){
 			Token tk1 = currentTk;
 			getToken();
@@ -684,7 +660,7 @@ public class SyntaticAnalyzer {
 				getToken();
 				expressaoCondicional();
 				if(currentTk.checkType(TokenType.SEPFCL)){
-					s=("DeclaracaoWhile = 'while'"+" ("+tk1.getValue()+") '['"
+					producoes.set(producoes.indexOf(s), "DeclaracaoWhile = 'while'"+" ("+tk1.getValue()+") '['"
 							+" ("+tk2.getValue()+") ExpressaoCondicional ']' Declaracao"
 							+" ("+currentTk.getValue()+")");
 					getToken();
@@ -700,10 +676,9 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoFor(){
+	public void declaracaoFor(){
 //		DeclaracaoFor = 'for' '[' InicializadorFor ';' LimiteSuperiorFor ';' PassoFor ']' Declaracao
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYFOR)){
 			Token tk1 = currentTk;
 			getToken();
@@ -720,7 +695,7 @@ public class SyntaticAnalyzer {
 						getToken();
 						passoFor();
 						if(currentTk.checkType(TokenType.SEPFCL)){
-							s=("DeclaracaoFor = 'for'"+" ("+tk1.getValue()+") '['"
+							producoes.set(producoes.indexOf(s), "DeclaracaoFor = 'for'"+" ("+tk1.getValue()+") '['"
 									+" ("+tk2.getValue()+") InicializadorFor ';'"+" ("+tk3.getValue()+")"
 									+" LimiteSuperiorFor ';'"+" ("+tk4.getValue()+") PassoFor ']'"
 									+" ("+currentTk.getValue()+")  Declaracao");
@@ -743,10 +718,9 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void inicializadorFor(){
+	public void inicializadorFor(){
 //		InicializadorFor = 'int' 'id' '=' ValorInicializadorFor
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYINT)){
 			Token tk1 = currentTk;
 			getToken();			
@@ -754,7 +728,7 @@ public class SyntaticAnalyzer {
 				Token tk2 = currentTk;
 				getToken();
 				if(currentTk.checkType(TokenType.OPRATR)){
-					s=("InicializadorFor = 'int'"+" ("+tk1.getValue()+") 'id'"
+					producoes.set(producoes.indexOf(s), "InicializadorFor = 'int'"+" ("+tk1.getValue()+") 'id'"
 						+" ("+tk2.getValue()+") '='"+" ("+currentTk.getValue()+")"+" ValorInicializadorFor");
 					getToken();
 					valorInicializadorFor();
@@ -769,64 +743,60 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void valorInicializadorFor(){
+	public void valorInicializadorFor(){
 //		ValorInicializadorFor = Literal
 //				| 'id'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("ValorInicializadorFor = 'id'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "ValorInicializadorFor = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			s=("ValorInicializadorFor = Literal");
+			producoes.set(producoes.indexOf(s), "ValorInicializadorFor = Literal");
 			literal();
 		}
 	}
 	
-	public static void limiteSuperiorFor(){
+	public void limiteSuperiorFor(){
 //		LimiteSuperiorFor = ConstanteNumerica 
 //				| Nome
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			s=("LimiteSuperiorFor = ConstanteNumerica");
+			producoes.set(producoes.indexOf(s), "LimiteSuperiorFor = ConstanteNumerica");
 			constanteNumerica();
 		}else{
-			s=("LimiteSuperiorFor = Nome");
+			producoes.set(producoes.indexOf(s), "LimiteSuperiorFor = Nome");
 			nome();
 		}
 	}
 	
-	public static void passoFor(){
+	public void passoFor(){
 //		PassoFor = ConstanteNumerica 
 //				| Nome
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.CTNDBL)||currentTk.checkType(TokenType.CTNINT)){
-			s=("PassoFor = ConstanteNumerica");
+			producoes.set(producoes.indexOf(s), "PassoFor = ConstanteNumerica");
 			constanteNumerica();
 		}else{
-			s=("PassoFor = Nome");
+			producoes.set(producoes.indexOf(s), "PassoFor = Nome");
 			nome();
 		}
 	}
 	
-	public static void declaracaoReturn(){
+	public void declaracaoReturn(){
 //		DeclaracaoReturn = 'return' ExpressaoAtribuicao ';' 
 //				| 'return' ';'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYRET)){
 			Token tk1 = currentTk;
 			getToken();
 			if(currentTk.checkType(TokenType.SEPPEV)){
-				s=("DeclaracaoReturn = 'return'"+" ("+tk1.getValue()+") ';'"
+				producoes.set(producoes.indexOf(s), "DeclaracaoReturn = 'return'"+" ("+tk1.getValue()+") ';'"
 						+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				expressaoAtribuicao();
 				if(currentTk.checkType(TokenType.SEPPEV)){
-					s=("DeclaracaoReturn = 'return'"+" ("+tk1.getValue()+") ExpressaoAtribuicao ';' "
+					producoes.set(producoes.indexOf(s), "DeclaracaoReturn = 'return'"+" ("+tk1.getValue()+") ExpressaoAtribuicao ';' "
 							+" ("+currentTk.getValue()+")");
 					getToken();
 				}else{
@@ -838,22 +808,21 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void declaracaoBreak(){
+	public void declaracaoBreak(){
 //		DeclaracaoBreak = 'break' ExpressaoAtribuicao ';' 
 //				| 'break' ';'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYBRK)){
 			Token tk1 = currentTk;
 			getToken();
 			if(currentTk.checkType(TokenType.SEPPEV)){
-				s=("DeclaracaoBreak = 'break'"+" ("+tk1.getValue()+") ';'"
+				producoes.set(producoes.indexOf(s), "DeclaracaoBreak = 'break'"+" ("+tk1.getValue()+") ';'"
 						+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
 				expressaoAtribuicao();
 				if(currentTk.checkType(TokenType.SEPPEV)){
-					s=("DeclaracaoBreak = 'break'"+" ("+tk1.getValue()+") ExpressaoAtribuicao ';' "
+					producoes.set(producoes.indexOf(s), "DeclaracaoBreak = 'break'"+" ("+tk1.getValue()+") ExpressaoAtribuicao ';' "
 							+" ("+currentTk.getValue()+")");
 					getToken();
 				}else{
@@ -865,10 +834,9 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoCriaInstanciaDeClasse(){
+	public void expressaoCriaInstanciaDeClasse(){
 //		ExpressaoCriaInstanciaDeClasse = 'new' 'id' '[' ListaDeArgumentos ']'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYNEW)){
 			Token tk1 = currentTk;
 			getToken();
@@ -880,7 +848,7 @@ public class SyntaticAnalyzer {
 					getToken();
 					listaDeArgumentos();
 					if(currentTk.checkType(TokenType.SEPFCL)){
-						s=("ExpressaoCriaInstanciaDeClasse = 'new'"+" ("+tk1.getValue()+") 'id'"
+						producoes.set(producoes.indexOf(s), "ExpressaoCriaInstanciaDeClasse = 'new'"+" ("+tk1.getValue()+") 'id'"
 								+" ("+tk2.getValue()+") '[' ListaDeArgumentos"+" ("+tk3.getValue()
 								+") ']'"+" ("+currentTk.getValue()+")");
 						getToken();
@@ -898,13 +866,12 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void listaDeArgumentos(){
+	public void listaDeArgumentos(){
 //		ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(!currentTk.checkType(TokenType.SEPFCL)){
-			s=("ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1");
+			producoes.set(producoes.indexOf(s), "ListaDeArgumentos = ExpressaoAtribuicao   ListaDeArgumentos1");
 			expressaoAtribuicao();
 			listaDeArgumentos1();
 		}else{
@@ -913,13 +880,12 @@ public class SyntaticAnalyzer {
 		
 	}
 	
-	public static void listaDeArgumentos1(){
+	public void listaDeArgumentos1(){
 //		ListaDeArgumentos1 = ',' ListaDeArgumentos   ListaDeArgumentos1 
 //				| null 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPVRG)){
-			s=("ListaDeArgumentos1 = ','"+" ("+currentTk.getValue()+")"+" ListaDeArgumentos   ListaDeArgumentos1 ");
+			producoes.set(producoes.indexOf(s), "ListaDeArgumentos1 = ','"+" ("+currentTk.getValue()+")"+" ListaDeArgumentos   ListaDeArgumentos1 ");
 			getToken();
 			listaDeArgumentos();
 			listaDeArgumentos1();
@@ -928,10 +894,9 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoCriaArray(){
+	public void expressaoCriaArray(){
 //		ExpressaoCriaArray = 'array' '[' Tipo ',' TamanhoArray ']'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYARY)){
 			Token tk1 = currentTk;
 			getToken();
@@ -944,7 +909,7 @@ public class SyntaticAnalyzer {
 					getToken();
 					tamanhoArray();
 					if(currentTk.checkType(TokenType.SEPFCL)){
-						s=("ExpressaoCriaArray = 'array'"+" ("+tk1.getValue()+") '[' Tipo"
+						producoes.set(producoes.indexOf(s), "ExpressaoCriaArray = 'array'"+" ("+tk1.getValue()+") '[' Tipo"
 								+" ("+tk2.getValue()+") ',' TamanhoArray"+" ("+tk3.getValue()
 								+") ']'"+" ("+currentTk.getValue()+")");
 						getToken();
@@ -962,24 +927,22 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void tamanhoArray(){
+	public void tamanhoArray(){
 //		TamanhoArray = 'id'
 //				| 'cntInt'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("TamanhoArray = 'id'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "TamanhoArray = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else if(currentTk.checkType(TokenType.KEYINT)){
-			s=("TamanhoArray = 'cntInt'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "TamanhoArray = 'cntInt'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}
 	}
 	
-	public static void chamadaMetodo(){
+	public void chamadaMetodo(){
 //		ChamadaMetodo = 'call' NomeMetodo '[' ListaDeArgumentos ']'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYCLL)){
 			Token tk1 = currentTk;
 			getToken();	
@@ -989,7 +952,7 @@ public class SyntaticAnalyzer {
 				getToken();
 				listaDeArgumentos();
 				if(currentTk.checkType(TokenType.SEPFCL)){
-					s=("ChamadaMetodo = 'call'"+" ("+tk1.getValue()+") NomeMetodo '['"
+					producoes.set(producoes.indexOf(s), "ChamadaMetodo = 'call'"+" ("+tk1.getValue()+") NomeMetodo '['"
 						+" ("+tk2.getValue()+") ListaDeArgumentos ']'"+" ("+currentTk.getValue()+")");
 					getToken();				
 				}else{
@@ -1003,38 +966,35 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void nomeMetodo(){
+	public void nomeMetodo(){
 //		NomeMetodo = Nome NomeMetodo1
 //					| 'print'
 //					| 'read'
-		String s="";
-		producoes.add(s);		
+		String s = defStr();		
 		if(currentTk.checkType(TokenType.KEYPRT)||currentTk.checkType(TokenType.KEYREA)){
-			s=("NomeMetodo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "NomeMetodo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			s=("NomeMetodo = Nome NomeMetodo1");
+			producoes.set(producoes.indexOf(s), "NomeMetodo = Nome NomeMetodo1");
 			nome();
 			nomeMetodo1();
 		}
 	}
 	
-	public static void nomeMetodo1(){
+	public void nomeMetodo1(){
 //		NomeMetodo1 = '.' NomeMetodo
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPPNT)){
-			s=("NomeMetodo1 = '.'"+" ("+currentTk.getValue()+")"+" NomeMetodo");
+			producoes.set(producoes.indexOf(s), "NomeMetodo1 = '.'"+" ("+currentTk.getValue()+")"+" NomeMetodo");
 			getToken();
 			nomeMetodo();
 		}
 	}
 	
-	public static void acessoArray(){
+	public void acessoArray(){
 //		AcessoArray = 'aaray' Nome '[' ExpressaoAtribuicao ']'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYAAY)){
 			Token tk1 = currentTk;
 			getToken();	
@@ -1044,7 +1004,7 @@ public class SyntaticAnalyzer {
 				getToken();
 				expressaoAtribuicao();
 				if(currentTk.checkType(TokenType.SEPFCL)){
-					s=("AcessoArray = 'aaray'"+" ("+tk1.getValue()+") Nome '['"
+					producoes.set(producoes.indexOf(s), "AcessoArray = 'aaray'"+" ("+tk1.getValue()+") Nome '['"
 						+" ("+tk2.getValue()+") ExpressaoAtribuicao ']'"+" ("+currentTk.getValue()+")");
 					getToken();				
 				}else{
@@ -1058,38 +1018,36 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void primario(){
+	public void primario(){
 //		Primario = PrimairoSemNovoArray 
 //				| ExpressaoCriaArray
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYARY)){
-			s=("Primario = ExpressaoCriaArray ");
+			producoes.set(producoes.indexOf(s), "Primario = ExpressaoCriaArray ");
 			expressaoCriaArray();
 		}else{
-			s=("Primario = PrimairoSemNovoArray ");
+			producoes.set(producoes.indexOf(s), "Primario = PrimairoSemNovoArray ");
 			primairoSemNovoArray();
 		}
 	}
 	
-	public static void primairoSemNovoArray(){
+	public void primairoSemNovoArray(){
 //		PrimairoSemNovoArray = Literal
 //		    	| 'this' 
 //		        | '[' ExpressaoAtribuicao ']'
 //		        | ExpressaoCriaInstanciaDeClasse
 //		    	| ChamadaMetodo 
 //				| AcessoArray
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYTHS)){
-			s=("PrimairoSemNovoArray = 'this'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "PrimairoSemNovoArray = 'this'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else if(currentTk.checkType(TokenType.SEPACL)){
 			Token tk1 = currentTk;
 			getToken();
 			expressaoAtribuicao();
 			if(currentTk.checkType(TokenType.SEPFCL)){
-				s=("PrimairoSemNovoArray = '['"+" ("+tk1.getValue()
+				producoes.set(producoes.indexOf(s), "PrimairoSemNovoArray = '['"+" ("+tk1.getValue()
 					+") ExpressaoAtribuicao ']'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
@@ -1097,33 +1055,32 @@ public class SyntaticAnalyzer {
 			}
 		}else if(currentTk.checkType(TokenType.CNTLGC)||currentTk.checkType(TokenType.CNTSTR)||currentTk.checkType(TokenType.CNTCHR)||
 				currentTk.checkType(TokenType.CTNINT)||currentTk.checkType(TokenType.CTNDBL)){
-			s=("PrimairoSemNovoArray = Literal");
+			producoes.set(producoes.indexOf(s), "PrimairoSemNovoArray = Literal");
 			literal();
 		}else if(currentTk.checkType(TokenType.KEYNEW)){
-			s=("PrimairoSemNovoArray = ExpressaoCriaInstanciaDeClasse");
+			producoes.set(producoes.indexOf(s), "PrimairoSemNovoArray = ExpressaoCriaInstanciaDeClasse");
 			expressaoCriaInstanciaDeClasse();
 		}else if(currentTk.checkType(TokenType.KEYCLL)){
-			s=("PrimairoSemNovoArray = ChamadaMetodo");
+			producoes.set(producoes.indexOf(s), "PrimairoSemNovoArray = ChamadaMetodo");
 			chamadaMetodo();
 		}else if(currentTk.checkType(TokenType.KEYAAY)){
-			s=("PrimairoSemNovoArray = AcessoArray");
+			producoes.set(producoes.indexOf(s), "PrimairoSemNovoArray = AcessoArray");
 			acessoArray();
 		}else{
 			erro();
 		}
 	}
 	
-	public static void argumentos(){
+	public void argumentos(){
 //		Argumentos = '[' ExpressaoAtribuicao ']'
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.SEPACL)){
 			Token tk1 = currentTk;
 			getToken();
 			expressaoAtribuicao();
 			if(currentTk.checkType(TokenType.SEPFCL)){
-				s=("Argumentos = '['"+" ("+tk1.getValue()+") ExpressaoAtribuicao ']'"
+				producoes.set(producoes.indexOf(s), "Argumentos = '['"+" ("+tk1.getValue()+") ExpressaoAtribuicao ']'"
 						+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
@@ -1134,13 +1091,12 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void atribuicao(){
+	public void atribuicao(){
 //		Atribuicao = LadoEsquerdo '=' ExpressaoAtribuicao 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		ladoEsquerdo();
 		if(currentTk.checkType(TokenType.OPRATR)){
-			s=("Atribuicao = LadoEsquerdo '='"+" ("+currentTk.getValue()+")"+" ExpressaoAtribuicao ");
+			producoes.set(producoes.indexOf(s), "Atribuicao = LadoEsquerdo '='"+" ("+currentTk.getValue()+")"+" ExpressaoAtribuicao ");
 			getToken();
 			expressaoAtribuicao();
 		}else{
@@ -1148,34 +1104,32 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void ladoEsquerdo(){
+	public void ladoEsquerdo(){
 //		LadoEsquerdo = AcessoArray
 //				| Nome1 Argumentos
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYAAY)){
-			s=("LadoEsquerdo = AcessoArray");
+			producoes.set(producoes.indexOf(s), "LadoEsquerdo = AcessoArray");
 			acessoArray();
 		}else{
-			s=("LadoEsquerdo = Nome1 Argumentos");
+			producoes.set(producoes.indexOf(s), "LadoEsquerdo = Nome1 Argumentos");
 			nome1();
 			argumentos();
 		}
 	}
 	
-	public static void nome1(){
+	public void nome1(){
 //		Nome1 = 'id' Nome1
 //				| Literal Nome1
 //				| null	
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("Nome1 = 'id'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "Nome1 = 'id'"+" ("+currentTk.getValue()+")");
 			getToken();
 			nome1();
 		}else if(currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYLGC)||
 				currentTk.checkType(TokenType.KEYCHR)||currentTk.checkType(TokenType.KEYSTR)){
-			s=("Nome1 = Literal");
+			producoes.set(producoes.indexOf(s), "Nome1 = Literal");
 			getToken();
 			nome1();
 		}else{
@@ -1183,34 +1137,31 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoAtribuicao(){
+	public void expressaoAtribuicao(){
 //		ExpressaoAtribuicao = ExpressaoCondicional
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoAtribuicao = ExpressaoCondicional");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoAtribuicao = ExpressaoCondicional");
 		expressaoCondicional();
 	}
 	
-	public static void expressaoCondicional(){
+	public void expressaoCondicional(){
 //		ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoCondicional = ExpressaoOuCondicional   ExpressaoCondicional1");
 		expressaoOuCondicional();
 		expressaoCondicional1();
 	}
 	
-	public static void expressaoCondicional1(){
+	public void expressaoCondicional1(){
 //		ExpressaoCondicional1 = '?' Expressao ':' ExpressaoCondicional
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRTRI)){
 			Token tk1 = currentTk;
 			getToken();
 			expressao();
 			if(currentTk.checkType(TokenType.SEPDPT)){
-				s=("ExpressaoCondicional1 = '?'"+" ("+tk1.getValue()
+				producoes.set(producoes.indexOf(s), "ExpressaoCondicional1 = '?'"+" ("+tk1.getValue()
 						+") Expressao ':'"+" ("+currentTk.getValue()+")"+" ExpressaoCondicional");
 				getToken();
 				expressaoCondicional();
@@ -1220,22 +1171,20 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoOuCondicional(){
+	public void expressaoOuCondicional(){
 //		ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoOuCondicional = ExpressaoECondicional   ExpressaoOuCondicional1");
 		expressaoECondicional();
 		expressaoOuCondicional1();
 	}
 	
-	public static void expressaoOuCondicional1(){
+	public void expressaoOuCondicional1(){
 //		ExpressaoOuCondicional1 = '||' ExpressaoCondicional   ExpressaoOuCondicional1 
 //				| null 
-		String s="";
-		producoes.add(s);		
+		String s = defStr();		
 		if(currentTk.checkType(TokenType.OPROCD)){
-			s=("ExpressaoOuCondicional1 = '||'"+" ("+currentTk.getValue()+")"+" ExpressaoCondicional   ExpressaoOuCondicional1 ");
+			producoes.set(producoes.indexOf(s), "ExpressaoOuCondicional1 = '||'"+" ("+currentTk.getValue()+")"+" ExpressaoCondicional   ExpressaoOuCondicional1 ");
 			getToken();
 			expressaoCondicional();
 			expressaoOuCondicional1();
@@ -1244,22 +1193,20 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoECondicional(){
+	public void expressaoECondicional(){
 //		ExpressaoECondicional = Expressao   ExpressaoECondicional1 
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoECondicional = Expressao   ExpressaoECondicional1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoECondicional = Expressao   ExpressaoECondicional1");
 		expressao();
 		expressaoECondicional1();
 	}
 	
-	public static void expressaoECondicional1(){
+	public void expressaoECondicional1(){
 //		ExpressaoECondicional1 = '&&' Expressao   ExpressaoECondicional1
 //				| null 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRECD)){
-			s=("ExpressaoECondicional1 = '&&'"+" ("+currentTk.getValue()+")"+" Expressao   ExpressaoECondicional1");
+			producoes.set(producoes.indexOf(s), "ExpressaoECondicional1 = '&&'"+" ("+currentTk.getValue()+")"+" Expressao   ExpressaoECondicional1");
 			getToken();
 			expressao();
 			expressaoECondicional1();
@@ -1267,22 +1214,20 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressao(){
+	public void expressao(){
 //		Expressao = ExpressaoEqualidade   Expressao1
-		String s="";
-		producoes.add(s);
-		s=("Expressao = ExpressaoEqualidade   Expressao1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "Expressao = ExpressaoEqualidade   Expressao1");
 		expressaoEqualidade();
 		expressao1();
 	}
 	
-	public static void expressao1(){
+	public void expressao1(){
 //		Expressao1 = '&' ExpressaoEqualidade   ExpressaoEqualidade1 
 //				| null 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRE)){
-			s=("Expressao1 = '&'"+" ("+currentTk.getValue()+")"+" ExpressaoEqualidade   ExpressaoEqualidade1");
+			producoes.set(producoes.indexOf(s), "Expressao1 = '&'"+" ("+currentTk.getValue()+")"+" ExpressaoEqualidade   ExpressaoEqualidade1");
 			getToken();
 			expressaoEqualidade();
 			expressaoEqualidade1();
@@ -1291,23 +1236,21 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoEqualidade(){
+	public void expressaoEqualidade(){
 //		ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoEqualidade = ExpressaoRelacional ExpressaoEqualidade1");
 		expressaoRelacional();
 		expressaoEqualidade1();
 	}
 	
-	public static void expressaoEqualidade1(){
+	public void expressaoEqualidade1(){
 //		ExpressaoEqualidade1 = '==' ExpressaoEqualidade   ExpressaoEqualidade1  
 //			    | '!=' ExpressaoEqualidade   ExpressaoEqualidade1 
 //			    | null 
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRIGL)||currentTk.checkType(TokenType.OPRDIF)){
-			s=("ExpressaoEqualidade1 ="+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoEqualidade   ExpressaoEqualidade1");
+			producoes.set(producoes.indexOf(s), "ExpressaoEqualidade1 ="+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoEqualidade   ExpressaoEqualidade1");
 			getToken();
 			expressaoEqualidade();
 			expressaoEqualidade1();
@@ -1316,50 +1259,47 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoRelacional(){
+	public void expressaoRelacional(){
 //		ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoRelacional = ExpressaoAditiva   ExpressaoRelacional1");
 		expressaoAditiva();
 		expressaoRelacional1();
 	}
 	
-	public static void expressaoRelacional1(){
+	public void expressaoRelacional1(){
 //		ExpressaoRelacional1 =  ExpressaoMenor 
 //				| ExpressaoMaior 
 //				| ExpressaoMenorOuIgual 
 //				| ExpressaoMaiorOuIgual 
 //				| ExpressaoInstance	
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMNR)){
-			s=("ExpressaoRelacional1 = ExpressaoMenor");
+			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = ExpressaoMenor");
 			expressaoMenor();
 		}else if(currentTk.checkType(TokenType.OPRMAR)){
-			s=("ExpressaoRelacional1 = ExpressaoMaior");
+			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = ExpressaoMaior");
 			expressaoMaior();
 		}else if(currentTk.checkType(TokenType.OPRMEI)){
-			s=("ExpressaoRelacional1 = ExpressaoMenorOuIgual");
+			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = ExpressaoMenorOuIgual");
 			expressaoMenorOuIgual();
 		}else if(currentTk.checkType(TokenType.OPRMAI)){
-			s=("ExpressaoRelacional1 = ExpressaoMaiorOuIgual");
+			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = ExpressaoMaiorOuIgual");
 			expressaoMaiorOuIgual();
 		}else if(currentTk.checkType(TokenType.KEYIOF)){
-			s=("ExpressaoRelacional1 = ExpressaoInstance");
+			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = ExpressaoInstance");
 			expressaoInstance();
 		}else{
 			
 		}
 	}
 	
-	public static void expressaoMenor(){
+	public void expressaoMenor(){
 //		ExpressaoMenor = '<' ExpressaoAditiva
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMNR)){
-			s=("ExpressaoMenor = '<'"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
+			producoes.set(producoes.indexOf(s), "ExpressaoMenor = '<'"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1367,12 +1307,11 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoMaior(){
+	public void expressaoMaior(){
 //		ExpressaoMaior = '<' ExpressaoAditiva
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMAR)){
-			s=("ExpressaoMaior = '<'"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
+			producoes.set(producoes.indexOf(s), "ExpressaoMaior = '<'"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1380,12 +1319,11 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoMenorOuIgual(){
+	public void expressaoMenorOuIgual(){
 //		ExpressaoMenorOuIgual = '<=' ExpressaoAditiva
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMEI)){
-			s=("ExpressaoMenorOuIgual =  '<='"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
+			producoes.set(producoes.indexOf(s), "ExpressaoMenorOuIgual =  '<='"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1393,12 +1331,11 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoMaiorOuIgual(){
+	public void expressaoMaiorOuIgual(){
 //		ExpressaoMaiorOuIgual = '>=' ExpressaoAditiva
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMAI)){
-			s=("ExpressaoMaiorOuIgual =  '>='"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
+			producoes.set(producoes.indexOf(s), "ExpressaoMaiorOuIgual =  '>='"+" ("+currentTk.getValue()+")"+" ExpressaoAditiva");
 			getToken();
 			expressaoAditiva();		
 		}else{
@@ -1406,15 +1343,14 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoInstance(){
+	public void expressaoInstance(){
 //		ExpressaoInstance = 'instanceof' 'id'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.KEYIOF)){
 			Token tk1 = currentTk;
 			getToken();
 			if(currentTk.checkType(TokenType.ID)){	
-				s=("ExpressaoInstance = 'instanceof'"+" ("+tk1.getValue()
+				producoes.set(producoes.indexOf(s), "ExpressaoInstance = 'instanceof'"+" ("+tk1.getValue()
 						+") 'id'"+" ("+currentTk.getValue()+")");
 				getToken();
 			}else{
@@ -1425,64 +1361,59 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoAditiva(){
+	public void expressaoAditiva(){
 //		ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoAditiva = ExpressaoMultiplicacao   ExpressaoAditiva1");
 		expressaoMultiplicativa();
 		expressaoAditiva1();
 	}
 	
-	public static void expressaoAditiva1(){
+	public void expressaoAditiva1(){
 //		ExpressaoAditiva1 = '+' ExpressaoMultiplicacao   ExpressaoAditiva1
 //		        |  '-' ExpressaoMultiplicacao   ExpressaoAditiva1 
 //		        | null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRADC)||currentTk.checkType(TokenType.OPRMEN)){
-			s=("ExpressaoAditiva1 = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoMultiplicacao   ExpressaoAditiva1");
+			producoes.set(producoes.indexOf(s), "ExpressaoAditiva1 = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoMultiplicacao   ExpressaoAditiva1");
 			expressaoMultiplicativa();
 			expressaoAditiva1();
 		}
 	}
 	
-	public static void expressaoMultiplicativa(){
+	public void expressaoMultiplicativa(){
 //		ExpressaoMultiplicativa = ExpressaoUnaria   ExpressaoMultiplicativa1
-		String s="";
-		producoes.add(s);
-		s=("ExpressaoMultiplicacao = ExpressaoUnaria   ExpressaoMultiplicacao1");
+		String s = defStr();
+		producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao = ExpressaoUnaria   ExpressaoMultiplicacao1");
 		expressaoUnaria();
 		expressaoMultiplicativa1();
 	}
 	
-	public static void expressaoMultiplicativa1(){
+	public void expressaoMultiplicativa1(){
 //		ExpressaoMultiplicativa1 = ExpressaoMultiplicacao 
 //				| ExpressaoDivisao 
 //				| ExpressaoModulo
 //				| null	
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMTL)){
-			s=("ExpressaoMultiplicacao1 = ExpressaoMultiplicacao ");
+			producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao1 = ExpressaoMultiplicacao ");
 			expressaoMultiplicacao();
 		}else if(currentTk.checkType(TokenType.OPRDIV)){
-			s=("ExpressaoMultiplicacao1 = ExpressaoDivisao ");
+			producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao1 = ExpressaoDivisao ");
 			expressaoDivisao();
 		}else if(currentTk.checkType(TokenType.OPRMOD)){
-			s=("ExpressaoMultiplicacao1 = ExpressaoModulo ");
+			producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao1 = ExpressaoModulo ");
 			expressaoModulo();
 		}else{
 			
 		}
 	}
 	
-	public static void expressaoMultiplicacao(){
+	public void expressaoMultiplicacao(){
 //		ExpressaoMultiplicacao = '*' ExpressaoUnaria   ExpressaoMultiplicativa
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMTL)){
-			s=("ExpressaoMultiplicacao = '*'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
+			producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao = '*'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
 			getToken();
 			expressaoUnaria();
 			expressaoMultiplicativa1();
@@ -1491,12 +1422,11 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoDivisao(){
+	public void expressaoDivisao(){
 //		ExpressaoDivisao = '/' ExpressaoUnaria   ExpressaoMultiplicativa
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRDIV)){
-			s=("ExpressaoDivisao = '/'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
+			producoes.set(producoes.indexOf(s), "ExpressaoDivisao = '/'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
 			getToken();
 			expressaoUnaria();
 			expressaoMultiplicativa1();
@@ -1505,12 +1435,11 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoModulo(){
+	public void expressaoModulo(){
 //		ExpressaoModulo = '%' ExpressaoUnaria   ExpressaoMultiplicativa
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMOD)){
-			s=("ExpressaoModulo = '%'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
+			producoes.set(producoes.indexOf(s), "ExpressaoModulo = '%'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria   ExpressaoMultiplicativa1");
 			getToken();
 			expressaoUnaria();
 			expressaoMultiplicativa1();
@@ -1519,102 +1448,95 @@ public class SyntaticAnalyzer {
 		}
 	}
 	
-	public static void expressaoIncrementoPre(){
+	public void expressaoIncrementoPre(){
 //		ExpressaoIncrementoPre = '++' ExpressaoUnaria
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMMA)){
-			s=("ExpressaoIncrementoPre = '++'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
+			producoes.set(producoes.indexOf(s), "ExpressaoIncrementoPre = '++'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
 			getToken();
 			expressaoUnaria();
 		}
 	}
 	
-	public static void expressaoDecrementoPre(){
+	public void expressaoDecrementoPre(){
 //		ExpressaoDecrementoPre = '--' ExpressaoUnaria
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMME)){
-			s=("ExpressaoDecrementoPre = '--'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
+			producoes.set(producoes.indexOf(s), "ExpressaoDecrementoPre = '--'"+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
 			getToken();
 			expressaoUnaria();
 		}
 	}
 	
-	public static void expressaoUnaria(){
+	public void expressaoUnaria(){
 //		ExpressaoUnaria = ExpressaoIncrementoPre
 //				| ExpressaoDecrementoPre 
 //				| '+' ExpressaoUnaria
 //				| '-' ExpressaoUnaria 
 //				| ExpressaoPosFixada
-		String s="";
-		producoes.add(s);		
+		String s = defStr();		
 		if(currentTk.checkType(TokenType.OPRADC)||currentTk.checkType(TokenType.OPRMEN)){
-			s=("ExpressaoUnaria = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
+			producoes.set(producoes.indexOf(s), "ExpressaoUnaria = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoUnaria");
 			getToken();
 			expressaoUnaria();
 		}else if(currentTk.checkType(TokenType.OPRMME)){
-			s=("ExpressaoUnaria = ExpressaoDecrementoPre");
+			producoes.set(producoes.indexOf(s), "ExpressaoUnaria = ExpressaoDecrementoPre");
 			expressaoDecrementoPre();
 		}else if(currentTk.checkType(TokenType.OPRMMA)){
-			s=("ExpressaoUnaria = ExpressaoIncrementoPre");
+			producoes.set(producoes.indexOf(s), "ExpressaoUnaria = ExpressaoIncrementoPre");
 			expressaoIncrementoPre();
 		}else{
-			s=("ExpressaoUnaria = ExpressaoPosFixada");
+			producoes.set(producoes.indexOf(s), "ExpressaoUnaria = ExpressaoPosFixada");
 			expressaoPosFixada();
 		}	
 	}
 	
-	public static void expressaoIncrementoPos(){
+	public void expressaoIncrementoPos(){
 //		ExpressaoIncrementoPos = ExpressaoPosFixada '++'
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		expressaoPosFixada();
 		if(currentTk.checkType(TokenType.OPRMMA)){
-			s=("ExpressaoIncrementoPos = ExpressaoPosFixada '++'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "ExpressaoIncrementoPos = ExpressaoPosFixada '++'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			erro();
 		}
 	}
 	
-	public static void expressaoDecrementoPos(){
-		String s="";
-		producoes.add(s);
+	public void expressaoDecrementoPos(){
+		String s = defStr();
 //		ExpressaoDecrementoPos = ExpressaoPosFixada '--'
 		expressaoPosFixada();
 		if(currentTk.checkType(TokenType.OPRMME)){
-			s=("ExpressaoDecrementoPos = ExpressaoPosFixada '--'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "ExpressaoDecrementoPos = ExpressaoPosFixada '--'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 				erro();
 		}
 	}
 	
-	public static void expressaoPosFixada(){
+	public void expressaoPosFixada(){
 //		ExpressaoPosFixada = Primario PosFixo
 //				| Nome PosFixo
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			s=("ExpressaoPosFixada = Nome PosFixo");
+			producoes.set(producoes.indexOf(s), "ExpressaoPosFixada = Nome PosFixo");
 			nome();
 			posFixo();
 		}else{
-			s=("ExpressaoPosFixada = Primario PosFixo");
+			producoes.set(producoes.indexOf(s), "ExpressaoPosFixada = Primario PosFixo");
 			primario();
 			posFixo();
 		}
 	}
 	
-	public static void posFixo(){
+	public void posFixo(){
 //		PoxFixo = '++'
 //				| '--'
 //				| null
-		String s="";
-		producoes.add(s);
+		String s = defStr();
 		if(currentTk.checkType(TokenType.OPRMMA)||currentTk.checkType(TokenType.OPRMME)){
-			s=("PoxFixo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "PoxFixo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
 			

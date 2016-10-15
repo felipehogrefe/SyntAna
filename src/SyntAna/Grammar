@@ -1,7 +1,8 @@
-+" ("+currentTk.getValue()+")"
-Token tk1 = currentTk;
-String s="";
-producoes.add(s);
+String s = defStr();
+producoes.set(producoes.indexOf(s), 
+
+
+
 
 Literal = Constante 
 		| ConstanteNumerica
