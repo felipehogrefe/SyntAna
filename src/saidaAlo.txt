@@ -1,0 +1,1 @@
+Constante = CNTSTR ("alo mundo")

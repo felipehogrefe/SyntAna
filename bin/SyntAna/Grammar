@@ -1,4 +1,7 @@
 +" ("+currentTk.getValue()+")"
+Token tk1 = currentTk;
+String s="";
+producoes.add(s);
 
 Literal = Constante 
 		| ConstanteNumerica
@@ -10,7 +13,7 @@ Constante = 'cntLgc'
 ConstanteNumerica = 'ctnInt' 
 		| 'ctnDbl' 
 
-Tipo = TipoPrimitivo 
+Tipo = TipoPrimitivo +
 		| Nome
 		| 'void'
 		| 'array'
