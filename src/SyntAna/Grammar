@@ -1,3 +1,6 @@
+producoes.set(producoes.indexOf(s),
+
+
 Literal = Constante 
 		| ConstanteNumerica
 		

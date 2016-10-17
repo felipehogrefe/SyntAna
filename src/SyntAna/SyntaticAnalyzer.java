@@ -172,7 +172,7 @@ public class SyntaticAnalyzer {
 				erro();
 			}
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ArrayCol = null");
 		}
 	}
 	
@@ -199,7 +199,7 @@ public class SyntaticAnalyzer {
 				erro();
 			}
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "Composicao = null");
 		}
 	}
 	
@@ -222,6 +222,7 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "Modificador = 'static'"+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
+			producoes.set(producoes.indexOf(s), "Modificador = null");
 		}
 	}
 	
@@ -279,7 +280,7 @@ public class SyntaticAnalyzer {
 			declaracaoMembroClasse();
 			declaracaoCorpoClasse1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "DeclaracaoCorpoClasse1 = null");
 		}
 	}
 	
@@ -333,6 +334,7 @@ public class SyntaticAnalyzer {
 			declaracaoVariavel();
 			declaracoesVariavel1();
 		}else{
+			producoes.set(producoes.indexOf(s), "DeclaracoesVariavel1 = null");
 		}
 	}
 	
@@ -352,7 +354,7 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "DeclaracaoVariavel1 = Atribuicao");
 			expressaoAtribuicao();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "DeclaracaoVariavel1 = null");
 		}
 	}
 	
@@ -422,7 +424,7 @@ public class SyntaticAnalyzer {
 			parametrosFormais();
 			listaDeParametrosFormais1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ListaDeParametrosFormais = null");
 		}
 	}
 	
@@ -436,7 +438,7 @@ public class SyntaticAnalyzer {
 			parametrosFormais();
 			listaDeParametrosFormais();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ListaDeParametrosFormais1 = null");
 		}
 	}
 	
@@ -499,7 +501,7 @@ public class SyntaticAnalyzer {
 			declaracaoDeBloco();
 			declaracaoDeBloco1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "DeclaracaoDeBloco1 = null");
 		}
 	}
 	
@@ -853,7 +855,7 @@ public class SyntaticAnalyzer {
 								+") ']'"+" ("+currentTk.getValue()+")");
 						getToken();
 					}else{
-//						erro
+						erro();
 					}
 				}else{
 					erro();
@@ -875,7 +877,7 @@ public class SyntaticAnalyzer {
 			expressaoAtribuicao();
 			listaDeArgumentos1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ListaDeArgumentos = null");
 		}
 		
 	}
@@ -890,7 +892,7 @@ public class SyntaticAnalyzer {
 			listaDeArgumentos();
 			listaDeArgumentos1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ListaDeArgumentos1 = null");
 		}
 	}
 	
@@ -989,6 +991,8 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "NomeMetodo1 = '.'"+" ("+currentTk.getValue()+")"+" NomeMetodo");
 			getToken();
 			nomeMetodo();
+		}else{
+			producoes.set(producoes.indexOf(s), "NomeMetodo1 = null");
 		}
 	}
 	
@@ -1087,7 +1091,7 @@ public class SyntaticAnalyzer {
 				erro();
 			}
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "Argumentos = null");
 		}
 	}
 	
@@ -1120,20 +1124,20 @@ public class SyntaticAnalyzer {
 	
 	public void nome1(){
 //		Nome1 = 'id' Nome1
-//				| Literal Nome1
+//				| Tipo Nome1
 //				| null	
 		String s = defStr();
 		if(currentTk.checkType(TokenType.ID)){
-			producoes.set(producoes.indexOf(s), "Nome1 = 'id'"+" ("+currentTk.getValue()+")");
+			producoes.set(producoes.indexOf(s), "Nome1 = 'id'"+" ("+currentTk.getValue()+") Nome1");
 			getToken();
 			nome1();
 		}else if(currentTk.checkType(TokenType.KEYINT)||currentTk.checkType(TokenType.KEYDBL)||currentTk.checkType(TokenType.KEYLGC)||
 				currentTk.checkType(TokenType.KEYCHR)||currentTk.checkType(TokenType.KEYSTR)){
-			producoes.set(producoes.indexOf(s), "Nome1 = Literal");
-			getToken();
+			producoes.set(producoes.indexOf(s), "Nome1 = Tipo Nome1");
+			tipo();
 			nome1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "Nome1 = null");
 		}
 	}
 	
@@ -1168,6 +1172,8 @@ public class SyntaticAnalyzer {
 			}else{
 				erro();
 			}
+		}else{
+			producoes.set(producoes.indexOf(s), "ExpressaoCondicional1 = null");
 		}
 	}
 	
@@ -1189,7 +1195,7 @@ public class SyntaticAnalyzer {
 			expressaoCondicional();
 			expressaoOuCondicional1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ExpressaoOuCondicional1 = null");
 		}
 	}
 	
@@ -1211,6 +1217,7 @@ public class SyntaticAnalyzer {
 			expressao();
 			expressaoECondicional1();
 		}else{
+			producoes.set(producoes.indexOf(s), "ExpressaoECondicional1 = null");
 		}
 	}
 	
@@ -1232,7 +1239,7 @@ public class SyntaticAnalyzer {
 			expressaoEqualidade();
 			expressaoEqualidade1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "Expressao1 = null");
 		}
 	}
 	
@@ -1255,7 +1262,7 @@ public class SyntaticAnalyzer {
 			expressaoEqualidade();
 			expressaoEqualidade1();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ExpressaoEqualidade1 = null");
 		}
 	}
 	
@@ -1291,7 +1298,7 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = ExpressaoInstance");
 			expressaoInstance();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ExpressaoRelacional1 = null");
 		}
 	}
 	
@@ -1378,6 +1385,8 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "ExpressaoAditiva1 = "+currentTk.getCategory()+" ("+currentTk.getValue()+")"+" ExpressaoMultiplicacao   ExpressaoAditiva1");
 			expressaoMultiplicativa();
 			expressaoAditiva1();
+		}else{
+			producoes.set(producoes.indexOf(s), "ExpressaoAditiva1 = null");
 		}
 	}
 	
@@ -1405,7 +1414,7 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao1 = ExpressaoModulo ");
 			expressaoModulo();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "ExpressaoMultiplicacao1 = null");
 		}
 	}
 	
@@ -1539,7 +1548,7 @@ public class SyntaticAnalyzer {
 			producoes.set(producoes.indexOf(s), "PoxFixo = "+currentTk.getCategory()+" ("+currentTk.getValue()+")");
 			getToken();
 		}else{
-			
+			producoes.set(producoes.indexOf(s), "PoxFixo = null");
 		}
 	}
 }	
